@@ -1,0 +1,17 @@
+{
+  "name": "WebTox",
+  "description": "A web based graphical user interface for Tox",
+  "launch_path": "/index.html",
+  "icons": {
+    "64": "/img/favicon.png"
+  },
+  "developer": {
+    "name": "codedust",
+    "url": "https://github.com/codedust"
+  },
+  "permissions": {
+    "desktop-notification": {
+      "description": "WebTox would like to show notifications for new incoming messages."
+    }
+  }
+}

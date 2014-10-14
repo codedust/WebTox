@@ -1,0 +1,406 @@
+/*
+  == Tox colors ==
+  Tox Green:   #6bc260
+  Tox Yellow:  #cebf44
+  Tox Red:     #c84e4e
+  Black:       #000000
+  Dark Grey:   #1c1c1c
+  Medium Grey: #414141
+  Light Grey:  #d1d1d1
+  White:       #ffffff
+
+  == additional colors (unofficial) ==
+  Medium gray hover: #515151
+  Tox Green darker:  #5abb4d, #4eac42, #429238 (used by .btn-toxgreen)
+  Tox red darker:    #bf3d3d, #ab3737, #902e2e (used by .btn-toxred)
+  Blue:              #2088C8
+*/
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('font/Roboto-Regular-webfont.eot');
+  src: url('font/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('font/Roboto-Regular-webfont.woff') format('woff'),
+       url('font/Roboto-Regular-webfont.ttf') format('truetype'),
+       url('font/Roboto-Regular-webfont.svg#robotoregular') format('svg');
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('font/Roboto-Bold-webfont.eot');
+  src: url('font/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+       url('font/Roboto-Bold-webfont.woff') format('woff'),
+       url('font/Roboto-Bold-webfont.ttf') format('truetype'),
+       url('font/Roboto-Bold-webfont.svg#robotobold') format('svg');
+  font-weight: bold;
+  font-style: normal; }
+
+body {
+  background: red; /* debug */
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+.text-monospace {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
+
+.avatar {
+  width: 40px; height: 40px;
+  background: #414141; }
+
+.btn-toxgreen {
+  color:#fff;
+  background-color:#6bc260;
+  border-color:#5abb4d; }
+
+.btn-toxgreen:hover,.btn-toxgreen:focus,.btn-toxgreen:active,.btn-toxgreen.active,.open>.dropdown-toggle.btn-toxgreen{
+  color:#fff;
+  background-color:#4eac42;
+  border-color:#429238; }
+
+.btn-toxgreen:active,.btn-toxgreen.active,.open>.dropdown-toggle.btn-toxgreen{
+  background-image:none; }
+
+.btn-toxgreen.disabled,.btn-toxgreen[disabled],fieldset[disabled] .btn-toxgreen,.btn-toxgreen.disabled:hover,.btn-toxgreen[disabled]:hover,fieldset[disabled] .btn-toxgreen:hover,.btn-toxgreen.disabled:focus,.btn-toxgreen[disabled]:focus,fieldset[disabled] .btn-toxgreen:focus,.btn-toxgreen.disabled:active,.btn-toxgreen[disabled]:active,fieldset[disabled] .btn-toxgreen:active,.btn-toxgreen.disabled.active,.btn-toxgreen[disabled].active,fieldset[disabled] .btn-toxgreen.active{
+  background-color:#6bc260;
+  border-color:#5abb4d; }
+
+.btn-toxgreen .badge{
+  color:#6bc260;
+  background-color:#fff; }
+
+.btn-toxred {
+  color:#fff;
+  background-color:#c84e4e;
+  border-color:#bf3d3d; }
+
+.btn-toxred:hover,.btn-toxred:focus,.btn-toxred:active,.btn-toxred.active,.open>.dropdown-toggle.btn-toxred{
+  color:#fff;
+  background-color:#ab3737;
+  border-color:#902e2e; }
+
+.btn-toxred:active,.btn-toxred.active,.open>.dropdown-toggle.btn-toxred{
+  background-image:none; }
+
+.btn-toxred.disabled,.btn-toxred[disabled],fieldset[disabled] .btn-toxred,.btn-toxred.disabled:hover,.btn-toxred[disabled]:hover,fieldset[disabled] .btn-toxred:hover,.btn-toxred.disabled:focus,.btn-toxred[disabled]:focus,fieldset[disabled] .btn-toxred:focus,.btn-toxred.disabled:active,.btn-toxred[disabled]:active,fieldset[disabled] .btn-toxred:active,.btn-toxred.disabled.active,.btn-toxred[disabled].active,fieldset[disabled] .btn-toxred.active{
+  background-color:#c84e4e;
+  border-color:#bf3d3d; }
+
+.btn-toxred .badge{
+  color:#6bc260;
+  background-color:#fff; }
+
+.modal-content, .modal-header {
+  border-radius: 0; }
+
+.modal.info .modal-header {
+  background: #2088C8;
+  border-color: #2088C8;
+  color: #fff; }
+
+.modal.error .modal-header {
+  background: #c84e4e;
+  border-color: #c84e4e;
+  color: #fff; }
+
+.modal.warning .modal-header {
+  background: #cebf44;
+  border-color: #cebf44;
+  color: #fff; }
+
+.dropdown-menu {
+  background: #1c1c1c;
+  box-shadow: 0 0 10px 3px black; }
+
+.dropdown-menu li img {
+  width: 20px;
+  height:20px; }
+
+.dropdown-menu span {
+  color: white; }
+
+.dropdown-menu li a:hover, .dropdown-menu li a:active {
+  background: #515151; }
+
+
+/*** PROFILE ***/
+#profile-card-wrapper {
+  position: absolute;
+  top: 0; left: 0;
+  min-width: 240px; height: 70px;
+  background: #1c1c1c;
+  margin: 0; padding: 0; }
+
+#profile-card {
+  padding: 15px;
+  color: white; }
+
+#profile-card-picture {
+  float: left;
+  margin-right: 10px; }
+
+#profile-card-status-dropdown {
+  float: right; }
+
+#profile-card-status-button {
+  padding: 9px 10px;
+  line-height: 20px;
+  background: #414141;
+  border: none;
+  border-radius: 5px; }
+
+#profile-card-username {
+  font-weight: bold; }
+
+#profile-card-status-msg {
+  color: #d1d1d1; }
+
+#profile-card-username, #profile-card-status-msg {
+  display: block;
+  width: auto;
+  border: none;
+  background: transparent; }
+
+#profile-card-username:focus, #profile-card-status-msg:focus {
+  border: 1px solid #d1d1d1;
+  background: #414141;
+  color: #ffffff; }
+
+
+/*** CONTACT LIST ***/
+#contact-list-wrapper {
+  position: absolute;
+  top: 70px; bottom: 50px; left: 0;
+
+  overflow:auto;
+  direction: rtl;
+  background: #414141; }
+
+#contact-list {
+  direction: ltr;
+  color: white; }
+
+#contact-list-status-select {
+  margin:10px 5px 10px 10px; padding: 5px 10px;
+  background: #1c1c1c;
+  border: 1px solid #000;
+  border-radius: 5px;
+  color: white;
+  line-height: 10px;
+  font-weight: bold; }
+
+#friend-request-button {
+  margin: 10px 10px 10px 0px; padding: 5px 10px;
+  border-radius: 5px;
+  vertical-align: bottom;
+  font-weight: bold; }
+
+#contact-list .contact {
+  display: block;
+  width: 100%;
+  vertical-align:top;
+  padding: 10px;
+  border: none;
+  background: #414141;
+  text-align: left; }
+
+#contact-list .contact:hover, #contact-list .contact:active {
+  background: #515151; }
+
+#contact-list .contact-status-icon {
+  float: right;
+  padding: 15px; }
+
+#contact-list .contact-avatar {
+  float: left;
+  margin-right: 10px; }
+
+#contact-list .contact-status-msg {
+  color: #d1d1d1; }
+
+#contact-list .active.contact {
+  background: white;
+  position: relative;
+  z-index: 1; }
+
+#contact-list .active.contact .contact-name {
+  color: #1c1c1c; }
+
+#contact-list .active.contact .contact-status-msg {
+  color: #414141; }
+
+
+/*** button-panel ***/
+#button-panel {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 50px;
+  margin: 0; padding: 0;
+  background: #1c1c1c; }
+
+#button-panel button {
+  display: block;
+  float: left;
+  width: 25%; height: 50px;
+  margin: 0; padding: 0;
+  border: none;
+  border-radius: 0;
+  background: #1c1c1c;
+  color: white; }
+
+#button-panel button:hover, #button-panel button:active {
+  background: #515151; }
+
+
+/*** chatview ***/
+#mainview {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  background: #fff;
+  box-shadow: 0 0 10px #000; }
+
+#mainview-welcome {
+  height: 100%;
+  overflow: auto;
+  padding: 10% 20%;
+  text-align: center; }
+
+#mainview-welcome h1 {
+  border-bottom: 1px solid #d1d1d1; }
+
+#mainview-welcome p {
+  font-size: 1.2em;
+  font-weight: lighter; }
+
+#mainview-chat-header {
+  position: absolute;
+  top: 0; right: 0; left: 0;
+  padding: 15px 15px 14px 15px;
+  /*border-bottom: 1px dotted #414141; */
+  box-shadow: 0 0 5px #414141; }
+
+#mainview-chat-header .avatar {
+  float: left;
+  margin-right: 10px; }
+
+#mainview-chat-header .btn-toxgreen, #mainview-chat-header .btn-toxred {
+  width: 50px; height: 40px;
+  margin: 0 5px; padding: 7px 0 11px 0; }
+
+#mainview-chat-header-username {
+  font-weight: bold;
+  color: #1c1c1c; }
+
+#mainview-chat-header-status-msg {
+  color: #414141; }
+
+#mainview-chat-body {
+  position: absolute;
+  overflow: auto;
+  top: 70px; right:0; bottom: 70px; left: 0;
+  padding: 10px; }
+
+#mainview-chat-body div .chatname {
+  font-weight: lighter; }
+
+#mainview-chat-body .messageself .chatname {
+  color: #414141; }
+
+#mainview-chat-body .timestamp {
+  text-align: right;
+  float: right;
+  color: #414141; }
+
+#mainview-chat-footer {
+  position: absolute;
+  right: 0; bottom: 0; left: 0;
+  height: 70px;
+  padding: 10px; }
+
+#mainview-chat-footer-textarea-wrapper {
+  position: absolute;
+  right: 120px; bottom: 0; left: 0; }
+
+#mainview-chat-footer textarea {
+  margin: 10px;
+  width: 100%; height: 60px;
+  padding: 5px;
+  border: 1px solid #d1d1d1;
+  resize: none; }
+
+#mainview-chat-footer-buttons-wrapper {
+  position: absolute;
+  right: 0; bottom: 1px;
+  margin: 10px;
+  height: 60px;
+  width: 100px; }
+
+#mainview-chat-footer-buttons-wrapper button {
+  border: none;
+  background: #6bc260; }
+
+#mainview-chat-footer-button-emoticon {
+  border-radius: 0 5px 0 0;
+  width: 29px; height: 29px;
+  display:block; }
+
+#mainview-chat-footer-button-attach {
+  border-radius: 0 0 5px 0;
+  margin-top: 2px;
+  width: 29px; height: 29px;
+  display:block; }
+
+#mainview-chat-footer-button-send {
+  border-radius: 5px;
+  width: 60px; height: 60px;
+  float: right; }
+
+#mainview-settings {
+  height: 100%;
+  overflow: auto;
+  padding: 10px; }
+
+#mainview-settings h1 {
+  margin: 15px 0 -6px 0;
+  font-size: 2em; }
+
+
+/*** MEDIA QUERYS ***/
+@media (max-width: 767px ) {
+  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+    width: 100%;
+  }
+
+  #mainview {
+    /* TODO */
+    display: none;
+    left: 100%;
+    top: 70px;
+  }
+}
+
+@media (min-width: 768px ) {
+  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+    width: 40%; }
+
+  #mainview {
+    width: 60%;
+  }
+}
+
+@media (min-width: 992px ) {
+  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+    width: 30%; }
+
+  #mainview {
+    width: 70%;
+  }
+}
+
+@media (min-width: 1200px ) {
+  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+    width: 25%; }
+
+  #mainview {
+    width: 75%;
+  }
+}

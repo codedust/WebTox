@@ -1,0 +1,25 @@
+TODO
+----
+
+- CSRF prevention
+- https / wss
+- typing notifications (mit padding-bottom)
+- auto-scroll in chat window
+- set own status (online/away/idle/invisible)
+- receive username and status updates from friends
+- update friend status after ws connection loss
+- store chat data and more server-side
+- enter new name for contacts
+- receive friend requests UI
+- add support for toxme.se
+- links in chat messages
+- group chats (waiting for golibtox update)
+- some kind of authentication (for remote access)
+- localization (www.transifex.com?)
+- emoticons
+- file transfer
+- A/V
+- auto-updates / update-notification
+- Mobile UI
+- power consumption on mobile devices
+- package as a WebApp
