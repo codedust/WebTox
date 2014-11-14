@@ -34,6 +34,7 @@
 
   <!-- Sidebar -->
   <div id="profile-card-wrapper">
+    <div id="profile-card-back-button" class="btn btn-toxgreen">&lt;</div>
     <div id="profile-card">
       <div id="profile-card-status-dropdown" class="dropdown">
         <button href="#" class="dropdown-toggle" data-toggle="dropdown" id="profile-card-status-button">
@@ -44,7 +45,7 @@
           <li><a href="#" ng-click=""><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
           <li><a href="#" ng-click=""><img src="img/toxui/dot_away.png">&emsp;<span translate>Away</span></a></li>
           <li><a href="#" ng-click=""><img src="img/toxui/dot_idle.png">&emsp;<span translate>Idle</span></a></li>
-          <li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Invisible</span></a></li>
+          <li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Offline</span></a></li>
           <li class="divider"></li>
           <li><a data-toggle="modal" href="#modal-toxid"><span class="glyphicon glyphicon-user"></span>&emsp;<span translate>Show ID</span></a></li>
           <li><a ng-click="goFullscreen()" href="#"><span class="glyphicon glyphicon-fullscreen"></span>&emsp;<span translate>Fullscreen</span></a></li>
@@ -65,16 +66,18 @@
         <option value="">All</option>
         <option value="1">Online</option>
       </select>
-      <button id="friend-request-button" class="btn btn-toxgreen" ng-click="notImplemented()">1 Friend Request</button>
-      <button class="contact" ng-repeat="contact in contacts | orderBy:'online':true" ng-class="{active: contact.active}"
+      <button id="friend-request-button" class="btn btn-toxgreen" data-toggle="modal" href="#modal-friend-requests">1 Friend Request</button>
+      <a href="#" class="contact" ng-repeat="contact in contacts | orderBy:'online':true" ng-class="{active: contact.active}"
               ng-click="showChat(contact.number)" ng-show="!onlyShowOnlineContacts || contact.online">
-        <img ng-show="contact.online && !contact.notify" src="img/toxui/dot_online.png" alt="Online" class="contact-status-icon">
-        <img ng-show="contact.online && contact.notify" src="img/toxui/dot_online_notification.png" alt="Online" class="contact-status-icon">
+        <img ng-show="contact.online && !contact.notify && contact.status != 'AWAY'" src="img/toxui/dot_online.png" alt="Online" class="contact-status-icon">
+        <img ng-show="contact.online && contact.notify && contact.status == 'AWAY'" src="img/toxui/dot_online_notification.png" alt="Online" class="contact-status-icon">
+        <img ng-show="contact.online && contact.status == 'AWAY'" src="img/toxui/dot_idle.png" alt="Idle" class="contact-status-icon">
+
         <img ng-show="!contact.online" src="img/toxui/dot_away.png" alt="Online" class="contact-status-icon">
         <img src="img/toxui/blankavatar.png" alt="avatar" class="contact-avatar avatar">
         <div class="contact-name">{{contact.name || "[Name not set]"}}</div>
         <div class="contact-status-msg">{{contact.status_msg}}</div>
-      </button>
+      </a>
     </div>
   </div>
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func jsonError(w http.ResponseWriter, code string, message string) {
+func rejectWithErrorJSON(w http.ResponseWriter, code string, message string) {
 	type Err struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
@@ -21,7 +21,7 @@ func jsonError(w http.ResponseWriter, code string, message string) {
 	http.Error(w, string(jsonErr), 422)
 }
 
-func jsonErrorDefault(w http.ResponseWriter) {
+func rejectWithDefaultErrorJSON(w http.ResponseWriter) {
 	type Err struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
@@ -32,15 +32,28 @@ func jsonErrorDefault(w http.ResponseWriter) {
 	http.Error(w, string(jsonErr), 422)
 }
 
+func userstatusString(status golibtox.UserStatus) string {
+	switch status {
+	case golibtox.USERSTATUS_NONE:
+		return "NONE"
+	case golibtox.USERSTATUS_AWAY:
+		return "AWAY"
+	case golibtox.USERSTATUS_BUSY:
+		return "BUSY"
+	default:
+		return "INVALID"
+	}
+}
+
 func getFriendListJSON() (string, error) {
 	type friend struct {
-		Number    int32               `json:"number"`
-		ID        string              `json:"id"`
-		Chat      []string            `json:"chat"`
-		Name      string              `json:"name"`
-		Status    golibtox.UserStatus `json:"status"`
-		StatusMsg string              `json:"status_msg"`
-		Online    bool                `json:"online"`
+		Number    int32    `json:"number"`
+		ID        string   `json:"id"`
+		Chat      []string `json:"chat"`
+		Name      string   `json:"name"`
+		Status    string   `json:"status"`
+		StatusMsg string   `json:"status_msg"`
+		Online    bool     `json:"online"`
 	}
 
 	friend_ids, err := libtox.GetFriendlist()
@@ -62,7 +75,7 @@ func getFriendListJSON() (string, error) {
 			ID:        strings.ToUpper(hex.EncodeToString(id)),
 			Chat:      []string{},
 			Name:      name,
-			Status:    userstatus,
+			Status:    userstatusString(userstatus),
 			StatusMsg: string(status_msg),
 			Online:    connected,
 		}

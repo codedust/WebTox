@@ -74,7 +74,7 @@ func main() {
 		fmt.Println("Username:", name)
 	}
 
-	// TODO
+	// TODO load userstatus
 	libtox.SetUserStatus(golibtox.USERSTATUS_NONE)
 
 	toxid, err := libtox.GetAddress()

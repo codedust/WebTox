@@ -28,6 +28,19 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     alert("This feature is not implemented yet. :( Sorry.");
   }
 
+
+  $('#profile-card-back-button').click(function(){
+    $('#contact-list-wrapper, #button-panel, #mainview').removeClass('translate100left');
+    $('#profile-card-back-button').hide();
+  });
+
+  $('#contact-list-wrapper').click(function(){
+    if($(window).width() < 768){
+      $('#contact-list-wrapper,  #mainview').addClass('translate100left');
+      $('#profile-card-back-button').show();
+    }
+  });
+
   // fullscreen
   $scope.goFullscreen = function(){
     var elem = document.querySelector("body");
@@ -206,7 +219,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     }
 
     console.log("Trying to connect to WebSocket server...");
-    var ws = new WebSocket("ws://localhost:8080/events");
+    var ws = new WebSocket("ws://"+location.host+"/events");
     ws.onopen = function (event) {
       console.log("WebSocket connection established.");
       $('#modal-connection-error').modal('hide');

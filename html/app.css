@@ -134,6 +134,12 @@ body {
   padding: 15px;
   color: white; }
 
+#profile-card-back-button {
+  display: none;
+  float: left;
+  width: 40px; height: 40px;
+  margin: 15px 10px; }
+
 #profile-card-picture {
   float: left;
   margin-right: 10px; }
@@ -201,14 +207,16 @@ body {
   padding: 10px;
   border: none;
   background: #414141;
-  text-align: left; }
+  text-align: left;
+  text-decoration: none;
+  color: white; }
 
 #contact-list .contact:hover, #contact-list .contact:active {
   background: #515151; }
 
 #contact-list .contact-status-icon {
   float: right;
-  padding: 15px; }
+  padding: 10px; }
 
 #contact-list .contact-avatar {
   float: left;
@@ -368,14 +376,16 @@ body {
 @media (max-width: 767px ) {
   #profile-card-wrapper, #contact-list-wrapper, #button-panel {
     width: 100%;
-  }
+    transition: transform 300ms; }
 
   #mainview {
-    /* TODO */
-    display: none;
-    left: 100%;
+    right: -100%;
+    width: 100%;
     top: 70px;
-  }
+    transition: transform 300ms; }
+
+  .translate100left {
+    transform: translateX(-100%); }
 }
 
 @media (min-width: 768px ) {

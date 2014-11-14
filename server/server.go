@@ -18,7 +18,8 @@ func serveGUI() {
 	http.HandleFunc("/", handleHTTP)
 
 	// TODO support 0.0.0.0 and different ports
-	err := http.ListenAndServe("127.0.0.1:8080", nil)
+	//err := http.ListenAndServe("127.0.0.1:8080", nil)
+	err := http.ListenAndServe("0.0.0.0:8080", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +28,7 @@ func serveGUI() {
 func handleAPI(w http.ResponseWriter, r *http.Request) {
 	if libtox == nil {
 		fmt.Println("[handleAPI] ERROR: libtox is nil.")
-		jsonErrorDefault(w)
+		rejectWithDefaultErrorJSON(w)
 		return
 	}
 
@@ -41,7 +42,7 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		case "/get/contactlist":
 			friendlist, err := getFriendListJSON()
 			if err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 			}
 			fmt.Fprintf(w, friendlist)
 
@@ -67,7 +68,7 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 
 		default:
 			// unknown GET request
-			jsonErrorDefault(w)
+			rejectWithDefaultErrorJSON(w)
 		}
 
 	// POST REQUESTS
@@ -75,7 +76,7 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		data := make([]byte, r.ContentLength)
 		bytesRead, err := r.Body.Read(data)
 		if err != nil && bytesRead == 0 {
-			jsonErrorDefault(w)
+			rejectWithDefaultErrorJSON(w)
 			return
 		}
 
@@ -89,13 +90,13 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			var incomingData message
 			err = json.Unmarshal(data, &incomingData)
 			if err != nil || len(incomingData.Message) == 0 {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
 			_, err = libtox.SendMessage(incomingData.Friend, []byte(incomingData.Message))
 			if err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
@@ -107,12 +108,12 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			var incomingData profile
 			err = json.Unmarshal(data, &incomingData)
 			if err != nil || len(incomingData.Username) == 0 {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
 			if err = libtox.SetName(incomingData.Username); err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
@@ -127,12 +128,12 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			var incomingData profile
 			err = json.Unmarshal(data, &incomingData)
 			if err != nil || len(incomingData.StatusMessage) == 0 {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
 			if err = libtox.SetStatusMessage([]byte(incomingData.StatusMessage)); err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
@@ -145,18 +146,18 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			var incomingData friendRequest
 			err = json.Unmarshal(data, &incomingData)
 			if err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
 			FriendIDbyte, err := hex.DecodeString(incomingData.FriendID)
 			if err != nil || len(FriendIDbyte) != golibtox.FRIEND_ADDRESS_SIZE {
-				jsonError(w, "invalid_toxid", "The Tox ID you entered is invalid.")
+				rejectWithErrorJSON(w, "invalid_toxid", "The Tox ID you entered is invalid.")
 				return
 			}
 
 			if len(incomingData.Message) == 0 {
-				jsonError(w, "no_message", "An invitation message is required.")
+				rejectWithErrorJSON(w, "no_message", "An invitation message is required.")
 				return
 			}
 
@@ -164,11 +165,11 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				switch err {
 				case golibtox.FaerrNoMessage:
-					jsonError(w, "no_message", "An invitation message is required.")
+					rejectWithErrorJSON(w, "no_message", "An invitation message is required.")
 					return
 
 				case golibtox.FaerrTooLong:
-					jsonError(w, "invalid_message", "The message you entered is too long.")
+					rejectWithErrorJSON(w, "invalid_message", "The message you entered is too long.")
 					return
 
 				case golibtox.FaerrOwnKey:
@@ -176,18 +177,18 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 				case golibtox.FaerrBadChecksum:
 					fallthrough
 				case golibtox.FaerrSetNewNospam:
-					jsonError(w, "invalid_toxid", "The Tox ID you entered is invalid.")
+					rejectWithErrorJSON(w, "invalid_toxid", "The Tox ID you entered is invalid.")
 					return
 
 				case golibtox.FaerrAlreadySent:
-					jsonError(w, "already_send", "A friend request to this person has already send.")
+					rejectWithErrorJSON(w, "already_send", "A friend request to this person has already send.")
 					return
 
 				case golibtox.FaerrUnkown:
 					fallthrough
 				case golibtox.FaerrNoMem:
 				default:
-					jsonErrorDefault(w)
+					rejectWithDefaultErrorJSON(w)
 					return
 				}
 			}
@@ -201,24 +202,24 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			var incomingData friend
 			err = json.Unmarshal(data, &incomingData)
 			if err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
 			err = libtox.DelFriend(incomingData.Number)
 			if err != nil {
-				jsonErrorDefault(w)
+				rejectWithDefaultErrorJSON(w)
 				return
 			}
 
 		default:
 			// unknown POST request
-			jsonErrorDefault(w)
+			rejectWithDefaultErrorJSON(w)
 		}
 
 	default:
 		// unknown API request
-		jsonErrorDefault(w)
+		rejectWithDefaultErrorJSON(w)
 	}
 }
 
