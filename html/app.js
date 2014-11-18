@@ -62,9 +62,9 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     } else if (Notification.permission === "granted") {
       var notification = new Notification(title, {
         body: body,
-        icon: '/img/favicon.png'
+        icon: '/img/favicon.png',
+        onclick: onclick
       });
-      notification.onclick = onclick;
     } else if (Notification.permission !== 'denied') {
       Notification.requestPermission(function (permission) {
         if (!('permission' in Notification)) {
@@ -219,7 +219,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     }
 
     console.log("Trying to connect to WebSocket server...");
-    var ws = new WebSocket("ws://"+location.host+"/events");
+    var ws = new WebSocket("wss://"+location.host+"/events");
     ws.onopen = function (event) {
       console.log("WebSocket connection established.");
       $('#modal-connection-error').modal('hide');
@@ -243,7 +243,9 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
             if ($scope.contacts[i].number === data.friend) {
               $scope.contacts[i].chat.push([data.friend, data.message, data.time]);
               if(!$scope.contacts[i].active) $scope.contacts[i].notify = true;
-              $scope.showNotification($scope.contacts[i].name ,data.message, function(){ $scope.showChat(data.friend); $scope.$apply(); });
+              $scope.showNotification($scope.contacts[i].name, data.message, function(){
+                $scope.showChat(data.friend); $scope.$apply();
+              });
               break;
             }
           }
@@ -252,6 +254,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
         case 'connection_status':
           var i = $scope.getContactIndexByNum(data.friend);
           $scope.contacts[i].online = data.online;
+          $scope.showNotification($scope.contacts[i].name+" is now "+(data.online?'online':'offline'));
           break;
 
       }

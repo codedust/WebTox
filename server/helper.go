@@ -8,6 +8,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"errors"
+	"io/ioutil"
 )
 
 func rejectWithErrorJSON(w http.ResponseWriter, code string, message string) {
@@ -95,4 +97,32 @@ func getUserprofilePath() string {
 		return home
 	}
 	return os.Getenv("HOME")
+}
+
+func loadData(t *golibtox.Tox, filepath string) error {
+	if len(filepath) == 0 {
+		return errors.New("Empty path")
+	}
+
+	data, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return err
+	}
+
+	err = t.Load(data)
+	return err
+}
+
+func saveData(t *golibtox.Tox, filepath string) error {
+	if len(filepath) == 0 {
+		return errors.New("Empty path")
+	}
+
+	data, err := t.Save()
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(filepath, data, 0644)
+	return err
 }
