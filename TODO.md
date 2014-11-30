@@ -2,7 +2,6 @@ TODO
 ----
 
 - CSRF prevention
-- https / wss
 - typing notifications (mit padding-bottom)
 - auto-scroll in chat window
 - set own status (online/away/idle/invisible)
@@ -23,3 +22,8 @@ TODO
 - Mobile UI
 - power consumption on mobile devices
 - package as a WebApp
+- settings: online / offline messages
+- context menu (right click to contacts to remove etc)
+- dont show notifications when browser is focused
+- add sounds
+- better logging

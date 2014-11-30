@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"crypto/tls"
-	"golang.org/x/net/websocket"
 	"io"
 	"fmt"
 	"net"
@@ -11,8 +10,6 @@ import (
 )
 
 func serveGUI() {
-	var err error
-
 	// TODO support 0.0.0.0 and different ports
 	netListener, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -27,44 +24,46 @@ func serveGUI() {
 		panic(err)
 	}
 
-	listener := &DowngradingListener{netListener, &tls.Config{
+	// create a listener that can listen to encrypted and unencrypted connections
+	listener := &muxListener{netListener, &tls.Config{
 		Certificates: []tls.Certificate{cert},
 		ServerName:   "WebTox",
 	}}
 
 	mux := http.NewServeMux()
-	mux.Handle("/events", websocket.Handler(handleWS))
+	mux.Handle("/events", handleWS)
 	mux.HandleFunc("/api/", handleAPI)
-	mux.HandleFunc("/", handleHTTP)
+	mux.Handle("/", http.FileServer(http.Dir("../html")))
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// redirect from http to https
+	redirectHandler := func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS == nil {
-			// redirect HTTP to HTTPS
 			r.URL.Host = r.Host
 			r.URL.Scheme = "https"
 			http.Redirect(w, r, r.URL.String(), http.StatusFound)
 		} else {
 			mux.ServeHTTP(w, r)
 		}
-	})
+	}
 
-	err = http.Serve(listener, handler)
+	err = http.Serve(listener, http.HandlerFunc(redirectHandler))
 	if err != nil {
 		panic(err)
 	}
 }
 
-type DowngradingListener struct {
+type muxListener struct {
 	net.Listener
 	TLSConfig *tls.Config
 }
 
-type WrappedConnection struct {
+type wrappedConnection struct {
 	io.Reader
 	net.Conn
 }
 
-func (l *DowngradingListener) Accept() (net.Conn, error) {
+// overrides muxListener.Accept to handle tls and non-tls connections
+func (l *muxListener) Accept() (net.Conn, error) {
 	conn, err := l.Listener.Accept()
 	if err != nil {
 		return nil, err
@@ -78,7 +77,7 @@ func (l *DowngradingListener) Accept() (net.Conn, error) {
 		return conn, nil
 	}
 
-	wrapper := &WrappedConnection{br, conn}
+	wrapper := &wrappedConnection{br, conn}
 
 	// 0x16 is the first byte of a TLS handshake
 	if bs[0] == 0x16 {
@@ -88,6 +87,6 @@ func (l *DowngradingListener) Accept() (net.Conn, error) {
 	return wrapper, nil
 }
 
-func (c *WrappedConnection) Read(b []byte) (n int, err error) {
+func (c *wrappedConnection) Read(b []byte) (n int, err error) {
 	return c.Reader.Read(b)
 }
