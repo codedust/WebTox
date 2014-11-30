@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"crypto/tls"
-	"io"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 )
@@ -32,21 +32,25 @@ func serveGUI() {
 
 	mux := http.NewServeMux()
 	mux.Handle("/events", handleWS)
-	mux.HandleFunc("/api/", handleAPI)
+	mux.Handle("/api/", handleAPI)
 	mux.Handle("/", http.FileServer(http.Dir("../html")))
 
+	// add authentication
+	// TODO: no auth if no password is set
+	handleAuth := basicAuthHandler(mux)
+
 	// redirect from http to https
-	redirectHandler := func(w http.ResponseWriter, r *http.Request) {
+	handleRedirect := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS == nil {
 			r.URL.Host = r.Host
 			r.URL.Scheme = "https"
 			http.Redirect(w, r, r.URL.String(), http.StatusFound)
 		} else {
-			mux.ServeHTTP(w, r)
+			handleAuth.ServeHTTP(w, r)
 		}
-	}
+	})
 
-	err = http.Serve(listener, http.HandlerFunc(redirectHandler))
+	err = http.Serve(listener, handleRedirect)
 	if err != nil {
 		panic(err)
 	}

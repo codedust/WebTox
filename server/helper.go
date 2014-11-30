@@ -1,15 +1,18 @@
 package main
 
 import (
+	"crypto/rand"
+	"crypto/sha512"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"github.com/organ/golibtox"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
-	"errors"
-	"io/ioutil"
 )
 
 func rejectWithErrorJSON(w http.ResponseWriter, code string, message string) {
@@ -97,6 +100,23 @@ func getUserprofilePath() string {
 		return home
 	}
 	return os.Getenv("HOME")
+}
+
+func randomString(len int) string {
+	bs := make([]byte, len)
+	_, err := rand.Reader.Read(bs)
+	if err != nil {
+		// TODO
+		panic("Error generating random string")
+	}
+
+	return base64.StdEncoding.EncodeToString(bs)
+}
+
+func sha512Sum(s string) string {
+	hasher := sha512.New()
+	hasher.Write([]byte(s))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 func loadData(t *golibtox.Tox, filepath string) error {

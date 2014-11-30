@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func handleAPI(w http.ResponseWriter, r *http.Request) {
+var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 
 	if libtox == nil {
@@ -207,4 +207,4 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		// unknown API request
 		rejectWithDefaultErrorJSON(w)
 	}
-}
+})

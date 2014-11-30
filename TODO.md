@@ -22,8 +22,8 @@ TODO
 - Mobile UI
 - power consumption on mobile devices
 - package as a WebApp
-- settings: online / offline messages
-- context menu (right click to contacts to remove etc)
+- settings: notifications
 - dont show notifications when browser is focused
+- context menu (right click to contacts to remove etc)
 - add sounds
 - better logging
