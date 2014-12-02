@@ -45,6 +45,11 @@ func basicAuthHandler(next http.Handler) http.Handler {
 		}
 
 		authFields := bytes.SplitN(authString, []byte(":"), 2)
+		if len(authFields) != 2 {
+			// no colon in authString
+			rejectWithHttpErrorNotAuthorized(w)
+			return
+		}
 
 		if string(authFields[0]) != AuthUser {
 			rejectWithHttpErrorNotAuthorized(w)
