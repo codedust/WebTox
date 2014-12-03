@@ -5,8 +5,6 @@ TODO
 - typing notifications (mit padding-bottom)
 - auto-scroll in chat window
 - set own status (online/away/idle/invisible)
-- receive username and status updates from friends
-- update friend status after ws connection loss
 - store chat data and more server-side
 - enter new name for contacts
 - receive friend requests UI

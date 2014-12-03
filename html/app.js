@@ -238,24 +238,39 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       var data = $.parseJSON(event.data);
 
       switch(data.type) {
-        case 'friend_message':
-          for(var i in $scope.contacts) {
-            if ($scope.contacts[i].number === data.friend) {
-              $scope.contacts[i].chat.push([data.friend, data.message, data.time]);
-              if(!$scope.contacts[i].active) $scope.contacts[i].notify = true;
-              $scope.showNotification($scope.contacts[i].name, data.message, function(){
-                $scope.showChat(data.friend); $scope.$apply();
-              });
-              break;
-            }
-          }
-          break;
+      case 'friend_message':
+        var i = $scope.getContactIndexByNum(data.friend)
+        if (i >= 0 && i < $scope.contacts.length)
+          $scope.contacts[i].chat.push([data.friend, data.message, data.time]);
+          if(!$scope.contacts[i].active) $scope.contacts[i].notify = true;
+          $scope.showNotification($scope.contacts[i].name, data.message, function(){
+            $scope.showChat(data.friend); $scope.$apply();
+          });
+        break;
 
-        case 'connection_status':
-          var i = $scope.getContactIndexByNum(data.friend);
-          $scope.contacts[i].online = data.online;
-          $scope.showNotification($scope.contacts[i].name+" is now "+(data.online?'online':'offline'));
-          break;
+      case 'name_changed':
+        var i = $scope.getContactIndexByNum(data.friend)
+        if (i >= 0 && i < $scope.contacts.length)
+          $scope.contacts[i].name = data.name;
+        break;
+
+      case 'status_message_changed':
+        var i = $scope.getContactIndexByNum(data.friend)
+        if (i >= 0 && i < $scope.contacts.length)
+          $scope.contacts[i].status_msg = data.status_msg;
+        break;
+
+      case 'status_changed':
+        var i = $scope.getContactIndexByNum(data.friend)
+        if (i >= 0 && i < $scope.contacts.length)
+          $scope.contacts[i].status = data.status;
+        break;
+
+      case 'connection_status':
+        var i = $scope.getContactIndexByNum(data.friend);
+        $scope.contacts[i].online = data.online;
+        $scope.showNotification($scope.contacts[i].name+" is now "+(data.online?'online':'offline'));
+        break;
 
       }
       $scope.$apply();

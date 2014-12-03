@@ -82,21 +82,21 @@ func main() {
 	// Register our callbacks
 	libtox.CallbackFriendRequest(onFriendRequest)
 	libtox.CallbackFriendMessage(onFriendMessage)
+	libtox.CallbackConnectionStatus(onConnectionStatus)
+	libtox.CallbackNameChange(onNameChange)
+	libtox.CallbackStatusMessage(onStatusMessage)
+	libtox.CallbackUserStatus(onUserStatus)
 	libtox.CallbackFileSendRequest(onFileSendRequest)
 	libtox.CallbackFileControl(onFileControl)
 	libtox.CallbackFileData(onFileData)
-	libtox.CallbackConnectionStatus(onConnectionStatus)
 	/**
 	tox_callback_friend_action
 	tox_callback_group_action
 	tox_callback_group_invite
 	tox_callback_group_message
 	tox_callback_group_namelist_change
-	tox_callback_name_change
 	tox_callback_read_receipt
-	tox_callback_status_message
 	tox_callback_typing_change
-	tox_callback_user_status
 	**/
 
 	// Connect to the network
