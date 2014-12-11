@@ -98,7 +98,7 @@ func onStatusMessage(t *golibtox.Tox, friendnumber int32, status []byte, length 
 }
 
 func onUserStatus(t *golibtox.Tox, friendnumber int32, userstatus golibtox.UserStatus) {
-	fmt.Printf("Status changed: %d -> %s\n", friendnumber, userstatusString(userstatus))
+	fmt.Printf("Status changed: %d -> %s\n", friendnumber, getUserStatusAsString(userstatus))
 
 	type jsonEvent struct {
 		Type   string `json:"type"`
@@ -109,7 +109,7 @@ func onUserStatus(t *golibtox.Tox, friendnumber int32, userstatus golibtox.UserS
 	e, _ := json.Marshal(jsonEvent{
 		Type:   "status_changed",
 		Friend: friendnumber,
-		Status: userstatusString(userstatus),
+		Status: getUserStatusAsString(userstatus),
 	})
 
 	broadcastToClients(string(e))

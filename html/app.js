@@ -113,16 +113,30 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   $scope.setUsername = function(username){
     $http.post('api/post/username', {
       username: username
+    }).success(function(){
+      $scope.fetchProfile();
     }).error(function(){
-      // TODO
+      $scope.fetchProfile();
     });
   };
 
   $scope.setStatusMsg = function(status_msg){
     $http.post('api/post/statusmessage', {
       status_msg: status_msg
+    }).success(function(){
+      $scope.fetchProfile();
     }).error(function(){
-      // TODO
+      $scope.fetchProfile();
+    });
+  };
+
+  $scope.setUserStatus = function(status){
+    $http.post('api/post/status', {
+      status: status
+    }).success(function(){
+      $scope.fetchProfile();
+    }).error(function(){
+      $scope.fetchProfile();
     });
   };
 
@@ -201,15 +215,19 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   });
 
   // == get initial data from server ==
-  $scope.updateServerData = function() {
+  $scope.fetchProfile = function() {
     $http.get('api/get/profile').success(function(data){
       $scope.profile = data;
     });
+  };
+  $scope.fetchProfile();
+
+  $scope.fetchContactlist = function() {
     $http.get('api/get/contactlist').success(function(data){
       $scope.contacts = data;
     });
   };
-  $scope.updateServerData();
+  $scope.fetchContactlist();
 
 
   // == initialize WebSocket connection ==
@@ -225,7 +243,8 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     ws.onopen = function (event) {
       console.log("WebSocket connection established.");
       $('#modal-connection-error').modal('hide');
-      $scope.updateServerData();
+      $scope.fetchProfile();
+      $scope.fetchContactlist();
     };
     ws.onclose = function(){
       console.log("WebSocket connection closed!");

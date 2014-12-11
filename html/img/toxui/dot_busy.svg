@@ -19,10 +19,10 @@
    inkscape:version="0.48.5 r10040"
    width="100%"
    height="100%"
-   sodipodi:docname="dot_invisible.svg"
-   inkscape:export-filename="/home/marco/goc/WebTox/html/img/toxui/dot_invisible.png"
-   inkscape:export-xdpi="135.03"
-   inkscape:export-ydpi="135.03"><metadata
+   sodipodi:docname="dot_busy.svg"
+   inkscape:export-filename="/home/marco/go/src/github.com/codedust/WebTox/html/img/toxui/dot_busy.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"><metadata
      id="metadata9"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
@@ -46,7 +46,7 @@
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="Layer_1" /><path
-     d="m 10,5 c -2.8,0 -5,2.2 -5,5 0,2.8 2.2,5 5,5 2.8,0 5,-2.2 5,-5 C 15,7.2 12.8,5 10,5 z M 6.5,10 C 6.5,8.3 7.7,6.9 9.3,6.6 v 6.8 C 7.7,13.1 6.5,11.7 6.5,10 z m 4.2,3.4 V 6.6 c 1.6,0.3 2.8,1.7 2.8,3.4 0,1.7 -1.2,3.1 -2.8,3.4 z"
+     d="m 13.514851,6.4851485 c -1.980198,-1.980198 -5.0495045,-1.980198 -7.0297025,0 -1.980198,1.980198 -1.980198,5.0495045 0,7.0297025 1.980198,1.980199 5.0495045,1.980199 7.0297025,0 1.980199,-1.980198 1.980199,-5.1485144 0,-7.0297025 z M 7.5742574,7.4752475 C 8.7623762,6.2871287 10.544554,6.1881188 11.930693,6.980198 L 7.1782178,11.831683 C 6.2871287,10.445545 6.3861386,8.6633663 7.5742574,7.4752475 z M 8.1683168,12.821782 12.920792,8.0693069 c 0.891089,1.3861386 0.693069,3.1683171 -0.495049,4.3564361 -1.188119,1.188118 -2.8712876,1.287128 -4.2574262,0.396039 z"
      id="path3"
      inkscape:connector-curvature="0"
-     style="fill:#ffffff" /></svg>
+     style="fill:#c94f50" /></svg>

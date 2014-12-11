@@ -61,6 +61,7 @@ func main() {
 		fmt.Println("Setting username to default: WebTox User")
 		libtox.SetName("WebTox User")
 		libtox.SetStatusMessage([]byte("WebToxing around..."))
+		libtox.SetUserStatus(golibtox.USERSTATUS_NONE)
 	} else {
 		name, err := libtox.GetSelfName()
 		if err != nil {
@@ -68,10 +69,19 @@ func main() {
 			libtox.SetName("WebTox User")
 		}
 		fmt.Println("Username:", name)
-	}
 
-	// TODO load userstatus
-	libtox.SetUserStatus(golibtox.USERSTATUS_NONE)
+		if _, err = libtox.GetSelfStatusMessage(); err != nil {
+			if err = libtox.SetStatusMessage([]byte("WebToxing around...")); err != nil {
+				panic(err)
+			}
+		}
+
+		if _, err = libtox.GetSelfUserStatus(); err != nil {
+			if err = libtox.SetUserStatus(golibtox.USERSTATUS_NONE); err != nil {
+				panic(err)
+			}
+		}
+	}
 
 	toxid, err := libtox.GetAddress()
 	if err != nil {

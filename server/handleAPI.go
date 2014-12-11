@@ -37,16 +37,18 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				Username      string `json:"username"`
 				StatusMessage string `json:"status_msg"`
 				ToxID         string `json:"tox_id"`
-				// TODO: status
+				Status        string `json:"status"`
 			}
 
 			username, _ := libtox.GetSelfName()
 			statusMessage, _ := libtox.GetSelfStatusMessage()
 			toxid, _ := libtox.GetAddress()
+			status, _ := libtox.GetSelfUserStatus()
 			p := profile{
 				Username:      username,
 				StatusMessage: string(statusMessage),
 				ToxID:         strings.ToUpper(hex.EncodeToString(toxid)),
+				Status:        getUserStatusAsString(status),
 			}
 
 			pJSON, _ := json.Marshal(p)
@@ -104,7 +106,21 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			}
 
 		case "/post/status":
-			// TODO
+			type profile struct {
+				Status string `json:"status"`
+			}
+
+			var incomingData profile
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			if err = libtox.SetUserStatus(getUserStatusFromString(incomingData.Status)); err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
 
 		case "/post/statusmessage":
 			type profile struct {

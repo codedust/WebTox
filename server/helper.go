@@ -37,7 +37,7 @@ func rejectWithDefaultErrorJSON(w http.ResponseWriter) {
 	http.Error(w, string(jsonErr), 422)
 }
 
-func userstatusString(status golibtox.UserStatus) string {
+func getUserStatusAsString(status golibtox.UserStatus) string {
 	switch status {
 	case golibtox.USERSTATUS_NONE:
 		return "NONE"
@@ -47,6 +47,19 @@ func userstatusString(status golibtox.UserStatus) string {
 		return "BUSY"
 	default:
 		return "INVALID"
+	}
+}
+
+func getUserStatusFromString(status string) golibtox.UserStatus {
+	switch status {
+	case "NONE":
+		return golibtox.USERSTATUS_NONE
+	case "AWAY":
+		return golibtox.USERSTATUS_AWAY
+	case "BUSY":
+		return golibtox.USERSTATUS_BUSY
+	default:
+		return golibtox.USERSTATUS_INVALID
 	}
 }
 
@@ -80,7 +93,7 @@ func getFriendListJSON() (string, error) {
 			ID:        strings.ToUpper(hex.EncodeToString(id)),
 			Chat:      []string{},
 			Name:      name,
-			Status:    userstatusString(userstatus),
+			Status:    getUserStatusAsString(userstatus),
 			StatusMsg: string(status_msg),
 			Online:    connected,
 		}

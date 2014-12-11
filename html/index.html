@@ -35,18 +35,17 @@
   <div id="profile-card">
     <div id="profile-card-status-dropdown" class="dropdown">
       <button href="#" class="dropdown-toggle" data-toggle="dropdown" id="profile-card-status-button">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && !contact.notify" src="img/toxui/dot_online.png" alt="Online">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && !contact.notify" src="img/toxui/dot_idle.png" alt="Away">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && !contact.notify" src="img/toxui/dot_away.png" alt="Busy">
-        <img class="contact-status-icon" ng-show="!contact.online && contact.notify"  src="img/toxui/dot_away_notification.png" alt="Offline">
-        <img src="img/toxui/dot_online.png" alt="Online">
+        <img ng-show="profile.status == 'NONE'" src="img/toxui/dot_online.png" alt="Online">
+        <img ng-show="profile.status == 'AWAY'" src="img/toxui/dot_idle.png" alt="Idle">
+        <img ng-show="profile.status == 'BUSY'" src="img/toxui/dot_busy.png" alt="Busy">
+        <!--<img ng-show="profile.status == 'INVI'" src="img/toxui/dot_invisible.png" alt="Invisible">-->
       </button>
 
       <ul class="dropdown-menu dropdown-menu-right">
-        <li><a href="#" ng-click=""><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
-        <li><a href="#" ng-click=""><img src="img/toxui/dot_away.png">&emsp;<span translate>Away</span></a></li>
-        <li><a href="#" ng-click=""><img src="img/toxui/dot_idle.png">&emsp;<span translate>Idle</span></a></li>
-        <li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Offline</span></a></li>
+        <li><a href="#" ng-click="setUserStatus('NONE')"><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
+        <li><a href="#" ng-click="setUserStatus('AWAY')"><img src="img/toxui/dot_idle.png">&emsp;<span translate>Idle</span></a></li>
+        <li><a href="#" ng-click="setUserStatus('BUSY')"><img src="img/toxui/dot_busy.png">&emsp;<span translate>Busy</span></a></li>
+        <!--<li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Invisible</span></a></li>-->
         <li class="divider"></li>
         <li><a data-toggle="modal" href="#modal-toxid"><span class="glyphicon glyphicon-user"></span>&emsp;<span translate>Show ID</span></a></li>
         <li><a ng-click="goFullscreen()" href="#"><span class="glyphicon glyphicon-fullscreen"></span>&emsp;<span translate>Fullscreen</span></a></li>
@@ -70,12 +69,12 @@
       <a href="#" class="contact" ng-class="{active: contact.active}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number)" ng-show="!onlyShowOnlineContacts || contact.online">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && !contact.notify" src="img/toxui/dot_online.png" alt="Online">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && contact.notify"  src="img/toxui/dot_online_notification.png" alt="Online">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && !contact.notify" src="img/toxui/dot_idle.png" alt="Away">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && contact.notify"  src="img/toxui/dot_idle_notification.png" alt="Away">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && !contact.notify" src="img/toxui/dot_away.png" alt="Busy">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && contact.notify"  src="img/toxui/dot_away_notification.png" alt="Busy">
-        <img class="contact-status-icon" ng-show="!contact.online && !contact.notify" src="img/toxui/dot_away.png" alt="Offline">
-        <img class="contact-status-icon" ng-show="!contact.online && contact.notify"  src="img/toxui/dot_away_notification.png" alt="Offline">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && !contact.notify" src="img/toxui/dot_idle.png" alt="Idle">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && contact.notify"  src="img/toxui/dot_idle_notification.png" alt="Idle">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && !contact.notify" src="img/toxui/dot_busy.png" alt="Busy">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && contact.notify"  src="img/toxui/dot_busy_notification.png" alt="Busy">
+        <img class="contact-status-icon" ng-show="!contact.online && !contact.notify" src="img/toxui/dot_offline.png" alt="Offline">
+        <img class="contact-status-icon" ng-show="!contact.online && contact.notify"  src="img/toxui/dot_offline_notification.png" alt="Offline">
         <img class="contact-avatar avatar" src="img/toxui/blankavatar.png" alt="avatar">
         <div class="contact-name">{{contact.name || "[Name not set]"}}</div>
         <div class="contact-status-msg">{{contact.status_msg}}</div>
