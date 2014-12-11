@@ -30,13 +30,15 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
 
 
   $('#profile-card-back-button').click(function(){
-    $('#contact-list-wrapper, #button-panel, #mainview').removeClass('translate100left');
+    $('#profile-card, #contact-list-wrapper, #button-panel').removeClass('translate75left');
+    $('#mainview').removeClass('translate100left');
     $('#profile-card-back-button').hide();
   });
 
   $('#contact-list-wrapper').click(function(){
     if($(window).width() < 768){
-      $('#contact-list-wrapper,  #mainview').addClass('translate100left');
+      $('#profile-card, #contact-list-wrapper, #button-panel').addClass('translate75left');
+      $('#mainview').addClass('translate100left');
       $('#profile-card-back-button').show();
     }
   });

@@ -38,6 +38,8 @@
 
 body {
   background: red; /* debug */
+  width: 100%;
+  overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 .text-monospace {
@@ -123,15 +125,13 @@ body {
 
 
 /*** PROFILE ***/
-#profile-card-wrapper {
-  position: absolute;
-  top: 0; left: 0;
-  min-width: 240px; height: 70px;
-  background: #1c1c1c;
-  margin: 0; padding: 0; }
-
 #profile-card {
-  padding: 15px;
+  position: relative;
+  top: 0; left:0;
+  width: 100%;
+  height: 60px;
+  background: #1c1c1c;
+  margin: 0; padding: 10px;
   color: white; }
 
 #profile-card-back-button {
@@ -175,8 +175,8 @@ body {
 /*** CONTACT LIST ***/
 #contact-list-wrapper {
   position: absolute;
-  top: 70px; bottom: 50px; left: 0;
-
+  top: 60px; bottom: 50px;
+  width: 100%;
   overflow:auto;
   direction: rtl;
   background: #414141; }
@@ -240,7 +240,7 @@ body {
 /*** button-panel ***/
 #button-panel {
   position: absolute;
-  bottom: 0; left: 0;
+  bottom: 0;
   height: 50px;
   margin: 0; padding: 0;
   background: #1c1c1c; }
@@ -282,7 +282,7 @@ body {
 #mainview-chat-header {
   position: absolute;
   top: 0; right: 0; left: 0;
-  padding: 15px 15px 14px 15px;
+  padding: 10px 8px 9px 10px;
   /*border-bottom: 1px dotted #414141; */
   box-shadow: 0 0 5px #414141; }
 
@@ -292,7 +292,7 @@ body {
 
 #mainview-chat-header .btn-toxgreen, #mainview-chat-header .btn-toxred {
   width: 50px; height: 40px;
-  margin: 0 5px; padding: 7px 0 11px 0; }
+  margin: 0 2px; padding: 7px 0 11px 0; }
 
 #mainview-chat-header-username {
   font-weight: bold;
@@ -374,22 +374,24 @@ body {
 
 /*** MEDIA QUERYS ***/
 @media (max-width: 767px ) {
-  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+  #profile-card, #contact-list-wrapper, #button-panel {
     width: 100%;
-    transition: transform 300ms; }
+    transition: transform 250ms; }
 
   #mainview {
     right: -100%;
     width: 100%;
-    top: 70px;
-    transition: transform 300ms; }
+    transition: transform 250ms; }
 
   .translate100left {
     transform: translateX(-100%); }
+
+  .translate75left {
+    transform: translateX(-75%); }
 }
 
 @media (min-width: 768px ) {
-  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+  #profile-card, #contact-list-wrapper, #button-panel {
     width: 40%; }
 
   #mainview {
@@ -398,7 +400,7 @@ body {
 }
 
 @media (min-width: 992px ) {
-  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+  #profile-card, #contact-list-wrapper, #button-panel {
     width: 30%; }
 
   #mainview {
@@ -407,7 +409,7 @@ body {
 }
 
 @media (min-width: 1200px ) {
-  #profile-card-wrapper, #contact-list-wrapper, #button-panel {
+  #profile-card, #contact-list-wrapper, #button-panel {
     width: 25%; }
 
   #mainview {

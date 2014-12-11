@@ -28,36 +28,36 @@
   <link rel="shortcut icon" href="img/favicon.ico">
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="app.css">
-
 </head>
 <body>
 
   <!-- Sidebar -->
-  <div id="profile-card-wrapper">
-    <div id="profile-card-back-button" class="btn btn-toxgreen">&lt;</div>
-    <div id="profile-card">
-      <div id="profile-card-status-dropdown" class="dropdown">
-        <button href="#" class="dropdown-toggle" data-toggle="dropdown" id="profile-card-status-button">
-          <img src="img/toxui/dot_online.png" alt="Online">
-        </button>
+  <div id="profile-card">
+    <div id="profile-card-status-dropdown" class="dropdown">
+      <button href="#" class="dropdown-toggle" data-toggle="dropdown" id="profile-card-status-button">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && !contact.notify" src="img/toxui/dot_online.png" alt="Online">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && !contact.notify" src="img/toxui/dot_idle.png" alt="Away">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && !contact.notify" src="img/toxui/dot_away.png" alt="Busy">
+        <img class="contact-status-icon" ng-show="!contact.online && contact.notify"  src="img/toxui/dot_away_notification.png" alt="Offline">
+        <img src="img/toxui/dot_online.png" alt="Online">
+      </button>
 
-        <ul class="dropdown-menu dropdown-menu-right">
-          <li><a href="#" ng-click=""><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
-          <li><a href="#" ng-click=""><img src="img/toxui/dot_away.png">&emsp;<span translate>Away</span></a></li>
-          <li><a href="#" ng-click=""><img src="img/toxui/dot_idle.png">&emsp;<span translate>Idle</span></a></li>
-          <li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Offline</span></a></li>
-          <li class="divider"></li>
-          <li><a data-toggle="modal" href="#modal-toxid"><span class="glyphicon glyphicon-user"></span>&emsp;<span translate>Show ID</span></a></li>
-          <li><a ng-click="goFullscreen()" href="#"><span class="glyphicon glyphicon-fullscreen"></span>&emsp;<span translate>Fullscreen</span></a></li>
-          <li><a ng-click="showSettings()" href="#" ><span class="glyphicon glyphicon-cog"></span>&emsp;<span translate>Settings</span></a></li>
-          <li><a data-toggle="modal" href="#modal-about"><span class="glyphicon glyphicon-leaf"></span>&emsp;<span translate>About</span></a></li>
-        </ul>
-      </div>
-
-      <img id="profile-card-picture" src="img/toxui/blankavatar.png" alt="Profile picture" class="avatar">
-      <input type="text" id="profile-card-username" ng-model="profile.username" ng-blur="setUsername(profile.username)">
-      <input type="text" id="profile-card-status-msg" ng-model="profile.status_msg" ng-blur="setStatusMsg(profile.status_msg)">
+      <ul class="dropdown-menu dropdown-menu-right">
+        <li><a href="#" ng-click=""><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
+        <li><a href="#" ng-click=""><img src="img/toxui/dot_away.png">&emsp;<span translate>Away</span></a></li>
+        <li><a href="#" ng-click=""><img src="img/toxui/dot_idle.png">&emsp;<span translate>Idle</span></a></li>
+        <li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Offline</span></a></li>
+        <li class="divider"></li>
+        <li><a data-toggle="modal" href="#modal-toxid"><span class="glyphicon glyphicon-user"></span>&emsp;<span translate>Show ID</span></a></li>
+        <li><a ng-click="goFullscreen()" href="#"><span class="glyphicon glyphicon-fullscreen"></span>&emsp;<span translate>Fullscreen</span></a></li>
+        <li><a ng-click="showSettings()" href="#" ><span class="glyphicon glyphicon-cog"></span>&emsp;<span translate>Settings</span></a></li>
+        <li><a data-toggle="modal" href="#modal-about"><span class="glyphicon glyphicon-leaf"></span>&emsp;<span translate>About</span></a></li>
+      </ul>
     </div>
+
+    <img id="profile-card-picture" src="img/toxui/blankavatar.png" alt="Profile picture" class="avatar">
+    <input type="text" id="profile-card-username" ng-model="profile.username" ng-blur="setUsername(profile.username)">
+    <input type="text" id="profile-card-status-msg" ng-model="profile.status_msg" ng-blur="setStatusMsg(profile.status_msg)">
   </div>
 
   <div id="contact-list-wrapper">
@@ -114,6 +114,7 @@
         <button class="chat-header-button btn btn-toxgreen pull-right">
           <img src="img/toxui/call.png" alt="Call">
         </button>
+        <div id="profile-card-back-button" class="btn btn-toxgreen">&lt;</div>
         <img src="img/toxui/blankavatar.png" alt="avatar" class="avatar">
         <div id="mainview-chat-header-username">{{contacts[activecontactindex].name}}</div>
         <div id="mainview-chat-header-status-msg">{{contacts[activecontactindex].status_msg}}</div>
@@ -270,11 +271,8 @@
   </div>
 
   <script src="angular/angular.min.js"></script>
-  <!--<script src="angular/angular-translate.min.js"></script>
-  <script src="angular/angular-translate-loader.min.js"></script>-->
   <script src="jquery/jquery-1.11.1.min.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
-  <!--<script src="lang/valid-langs.js"></script>-->
   <script src="app.js"></script>
 </body>
 </html>
