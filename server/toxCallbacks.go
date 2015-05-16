@@ -4,38 +4,40 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/organ/golibtox"
+	"github.com/codedust/go-tox"
 	"os"
 	"time"
 )
 
-func onFriendRequest(t *golibtox.Tox, publicKey []byte, data []byte, length uint16) {
+func onFriendRequest(t *gotox.Tox, publicKey []byte, message string) {
 	fmt.Printf("New friend request from %s\n", hex.EncodeToString(publicKey))
-	fmt.Printf("Invitation message: %v\n", string(data))
+	fmt.Printf("Invitation message: %v\n", message)
 
 	// TODO Auto-accept friend request
-	a, err := t.AddFriendNorequest(publicKey)
+	a, err := t.FriendAddNorequest(publicKey)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Printf(string(a))
 }
 
-func onFriendMessage(t *golibtox.Tox, friendnumber int32, message []byte, length uint16) {
-	fmt.Printf("New message from %d : %s\n", friendnumber, string(message))
+func onFriendMessage(t *gotox.Tox, friendnumber uint32, messagetype gotox.MessageType, message string) {
+	fmt.Printf("New message from %d : %s\n", friendnumber, message)
 
 	type jsonEvent struct {
-		Type    string `json:"type"`
-		Friend  int32  `json:"friend"`
-		Time    int64  `json:"time"`
-		Message string `json:"message"`
+		Type     string `json:"type"`
+		Friend   uint32 `json:"friend"`
+		Time     int64  `json:"time"`
+		Message  string `json:"message"`
+		IsAction bool   `json:"isAction"`
 	}
 
 	e, _ := json.Marshal(jsonEvent{
-		Type:    "friend_message",
-		Friend:  friendnumber,
-		Time:    time.Now().Unix() * 1000,
-		Message: string(message),
+		Type:     "friend_message",
+		Friend:   friendnumber,
+		Time:     time.Now().Unix() * 1000,
+		Message:  message,
+		IsAction: messagetype == gotox.MESSAGE_TYPE_ACTION,
 	})
 
 	// TODO save messages server-side
@@ -43,66 +45,66 @@ func onFriendMessage(t *golibtox.Tox, friendnumber int32, message []byte, length
 	broadcastToClients(string(e))
 }
 
-func onConnectionStatus(t *golibtox.Tox, friendnumber int32, online bool) {
-	fmt.Printf("Status changed: %d -> %t\n", friendnumber, online)
+func onFriendConnectionStatusChanges(t *gotox.Tox, friendnumber uint32, connectionStatus gotox.ConnectionStatus) {
+	fmt.Printf("Status changed: %d -> %t\n", friendnumber, connectionStatus)
 
 	type jsonEvent struct {
 		Type   string `json:"type"`
-		Friend int32  `json:"friend"`
+		Friend uint32 `json:"friend"`
 		Online bool   `json:"online"`
 	}
 
 	e, _ := json.Marshal(jsonEvent{
 		Type:   "connection_status",
 		Friend: friendnumber,
-		Online: online,
+		Online: connectionStatus != gotox.CONNECTION_NONE,
 	})
 
 	broadcastToClients(string(e))
 }
 
-func onNameChange(t *golibtox.Tox, friendnumber int32, newname []byte, length uint16) {
+func onFriendNameChanges(t *gotox.Tox, friendnumber uint32, newname string) {
 	fmt.Printf("Name changed: %d -> %s\n", friendnumber, newname)
 
 	type jsonEvent struct {
 		Type   string `json:"type"`
-		Friend int32  `json:"friend"`
+		Friend uint32 `json:"friend"`
 		Name   string `json:"name"`
 	}
 
 	e, _ := json.Marshal(jsonEvent{
 		Type:   "name_changed",
 		Friend: friendnumber,
-		Name:   string(newname),
+		Name:   newname,
 	})
 
 	broadcastToClients(string(e))
 }
 
-func onStatusMessage(t *golibtox.Tox, friendnumber int32, status []byte, length uint16) {
+func onFriendStatusMessageChanges(t *gotox.Tox, friendnumber uint32, status string) {
 	fmt.Printf("Status message changed: %d -> %s\n", friendnumber, status)
 
 	type jsonEvent struct {
 		Type      string `json:"type"`
-		Friend    int32  `json:"friend"`
+		Friend    uint32 `json:"friend"`
 		StatusMsg string `json:"status_msg"`
 	}
 
 	e, _ := json.Marshal(jsonEvent{
 		Type:      "status_message_changed",
 		Friend:    friendnumber,
-		StatusMsg: string(status),
+		StatusMsg: status,
 	})
 
 	broadcastToClients(string(e))
 }
 
-func onUserStatus(t *golibtox.Tox, friendnumber int32, userstatus golibtox.UserStatus) {
+func onFriendStatusChanges(t *gotox.Tox, friendnumber uint32, userstatus gotox.UserStatus) {
 	fmt.Printf("Status changed: %d -> %s\n", friendnumber, getUserStatusAsString(userstatus))
 
 	type jsonEvent struct {
 		Type   string `json:"type"`
-		Friend int32  `json:"friend"`
+		Friend uint32 `json:"friend"`
 		Status string `json:"status"`
 	}
 
@@ -115,33 +117,33 @@ func onUserStatus(t *golibtox.Tox, friendnumber int32, userstatus golibtox.UserS
 	broadcastToClients(string(e))
 }
 
-func onFileSendRequest(t *golibtox.Tox, friendnumber int32, filenumber uint8, filesize uint64, filename []byte, filenameLength uint16) {
-	// TODO
+func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind uint32, filesize uint64, filename string) {
 	// Accept any file send request
-	t.FileSendControl(friendnumber, true, filenumber, golibtox.FILECONTROL_ACCEPT, nil)
+	t.SendFileControl(friendnumber, true, filenumber, gotox.FILE_CONTROL_RESUME, nil)
 	// Init *File handle
-	f, _ := os.Create("example_" + string(filename))
+	f, _ := os.Create("example_" + filename)
 	// Append f to the map[uint8]*os.File
 	transfers[filenumber] = f
+	transfersFilesizes[filenumber] = filesize
 }
 
-func onFileControl(t *golibtox.Tox, friendnumber int32, sending bool, filenumber uint8, fileControl golibtox.FileControl, data []byte, length uint16) {
-	// TODO
+func onFileRecvControl(t *gotox.Tox, friendnumber uint32, filenumber uint32, fileControl gotox.FileControl) {
+	// Do something useful
+}
+
+func onFileRecvChunk(t *gotox.Tox, friendnumber uint32, filenumber uint32, position uint64, data []byte) {
+	// Write data to the hopefully valid *File handle
+	if f, exists := transfers[filenumber]; exists {
+		f.WriteAt(data, (int64)(position))
+	}
+
 	// Finished receiving file
-	if fileControl == golibtox.FILECONTROL_FINISHED {
+	if position == transfersFilesizes[filenumber] {
 		f := transfers[filenumber]
 		f.Sync()
 		f.Close()
 		delete(transfers, filenumber)
 		fmt.Println("Written file", filenumber)
-		t.SendMessage(friendnumber, []byte("Finished! Thanks!"))
-	}
-}
-
-func onFileData(t *golibtox.Tox, friendnumber int32, filenumber uint8, data []byte, length uint16) {
-	// TODO
-	// Write data to the hopefully valid *File handle
-	if f, exists := transfers[filenumber]; exists {
-		f.Write(data)
+		t.FriendSendMessage(friendnumber, gotox.MESSAGE_TYPE_NORMAL, "Thanks!")
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"github.com/organ/golibtox"
+	"github.com/codedust/go-tox"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -37,35 +37,35 @@ func rejectWithDefaultErrorJSON(w http.ResponseWriter) {
 	http.Error(w, string(jsonErr), 422)
 }
 
-func getUserStatusAsString(status golibtox.UserStatus) string {
+func getUserStatusAsString(status gotox.UserStatus) string {
 	switch status {
-	case golibtox.USERSTATUS_NONE:
+	case gotox.USERSTATUS_NONE:
 		return "NONE"
-	case golibtox.USERSTATUS_AWAY:
+	case gotox.USERSTATUS_AWAY:
 		return "AWAY"
-	case golibtox.USERSTATUS_BUSY:
+	case gotox.USERSTATUS_BUSY:
 		return "BUSY"
 	default:
 		return "INVALID"
 	}
 }
 
-func getUserStatusFromString(status string) golibtox.UserStatus {
+func getUserStatusFromString(status string) gotox.UserStatus {
 	switch status {
 	case "NONE":
-		return golibtox.USERSTATUS_NONE
+		return gotox.USERSTATUS_NONE
 	case "AWAY":
-		return golibtox.USERSTATUS_AWAY
+		return gotox.USERSTATUS_AWAY
 	case "BUSY":
-		return golibtox.USERSTATUS_BUSY
+		return gotox.USERSTATUS_BUSY
 	default:
-		return golibtox.USERSTATUS_INVALID
+		return gotox.USERSTATUS_NONE
 	}
 }
 
 func getFriendListJSON() (string, error) {
 	type friend struct {
-		Number    int32    `json:"number"`
+		Number    uint32   `json:"number"`
 		ID        string   `json:"id"`
 		Chat      []string `json:"chat"`
 		Name      string   `json:"name"`
@@ -74,7 +74,7 @@ func getFriendListJSON() (string, error) {
 		Online    bool     `json:"online"`
 	}
 
-	friend_ids, err := libtox.GetFriendlist()
+	friend_ids, err := libtox.SelfGetFriendlist()
 	if err != nil {
 		return "", err
 	}
@@ -82,11 +82,11 @@ func getFriendListJSON() (string, error) {
 	friends := make([]friend, len(friend_ids))
 	for i, friend_num := range friend_ids {
 		// TODO: handle errors
-		id, _ := libtox.GetClientId(friend_num)
-		name, _ := libtox.GetName(friend_num)
-		connected, _ := libtox.GetFriendConnectionStatus(friend_num)
-		userstatus, _ := libtox.GetUserStatus(friend_num)
-		status_msg, _ := libtox.GetStatusMessage(friend_num)
+		id, _ := libtox.FriendGetPublickey(friend_num)
+		name, _ := libtox.FriendGetName(friend_num)
+		connected, _ := libtox.FriendGetConnectionStatus(friend_num)
+		userstatus, _ := libtox.FriendGetStatus(friend_num)
+		status_msg, _ := libtox.FriendGetStatusMessage(friend_num)
 
 		newfriend := friend{
 			Number:    friend_num,
@@ -95,7 +95,7 @@ func getFriendListJSON() (string, error) {
 			Name:      name,
 			Status:    getUserStatusAsString(userstatus),
 			StatusMsg: string(status_msg),
-			Online:    connected,
+			Online:    connected != gotox.CONNECTION_NONE,
 		}
 
 		friends[i] = newfriend
@@ -132,26 +132,25 @@ func sha512Sum(s string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func loadData(t *golibtox.Tox, filepath string) error {
+func loadData(filepath string) ([]byte, error) {
 	if len(filepath) == 0 {
-		return errors.New("Empty path")
+		return nil, errors.New("Empty path")
 	}
 
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = t.Load(data)
-	return err
+	return data, err
 }
 
-func saveData(t *golibtox.Tox, filepath string) error {
+func saveData(t *gotox.Tox, filepath string) error {
 	if len(filepath) == 0 {
 		return errors.New("Empty path")
 	}
 
-	data, err := t.Save()
+	data, err := t.GetSavedata()
 	if err != nil {
 		return err
 	}

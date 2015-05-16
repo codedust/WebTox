@@ -10,7 +10,7 @@ TODO
 - receive friend requests UI
 - add support for toxme.se
 - links in chat messages
-- group chats (waiting for golibtox update)
+- group chats (waiting for gotox update)
 - some kind of authentication (for remote access)
 - localization (www.transifex.com?)
 - emoticons

@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/organ/golibtox"
+	"github.com/codedust/go-tox"
 	"net/http"
 	"strings"
 )
@@ -40,10 +40,10 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				Status        string `json:"status"`
 			}
 
-			username, _ := libtox.GetSelfName()
-			statusMessage, _ := libtox.GetSelfStatusMessage()
-			toxid, _ := libtox.GetAddress()
-			status, _ := libtox.GetSelfUserStatus()
+			username, _ := libtox.SelfGetName()
+			statusMessage, _ := libtox.SelfGetStatusMessage()
+			toxid, _ := libtox.SelfGetAddress()
+			status, _ := libtox.SelfGetStatus()
 			p := profile{
 				Username:      username,
 				StatusMessage: string(statusMessage),
@@ -71,7 +71,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch request {
 		case "/post/message":
 			type message struct {
-				Friend  int32
+				Friend  uint32
 				Message string
 			}
 
@@ -82,7 +82,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			_, err = libtox.SendMessage(incomingData.Friend, []byte(incomingData.Message))
+			_, err = libtox.FriendSendMessage(incomingData.Friend, gotox.MESSAGE_TYPE_NORMAL, incomingData.Message)
 			if err != nil {
 				rejectWithDefaultErrorJSON(w)
 				return
@@ -100,7 +100,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			if err = libtox.SetName(incomingData.Username); err != nil {
+			if err = libtox.SelfSetName(incomingData.Username); err != nil {
 				rejectWithDefaultErrorJSON(w)
 				return
 			}
@@ -117,7 +117,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			if err = libtox.SetUserStatus(getUserStatusFromString(incomingData.Status)); err != nil {
+			if err = libtox.SelfSetStatus(getUserStatusFromString(incomingData.Status)); err != nil {
 				rejectWithDefaultErrorJSON(w)
 				return
 			}
@@ -134,7 +134,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			if err = libtox.SetStatusMessage([]byte(incomingData.StatusMessage)); err != nil {
+			if err = libtox.SelfSetStatusMessage(incomingData.StatusMessage); err != nil {
 				rejectWithDefaultErrorJSON(w)
 				return
 			}
@@ -152,8 +152,8 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			FriendIDbyte, err := hex.DecodeString(incomingData.FriendID)
-			if err != nil || len(FriendIDbyte) != golibtox.FRIEND_ADDRESS_SIZE {
+			friendAddressBytes, err := hex.DecodeString(incomingData.FriendID)
+			if err != nil || len(friendAddressBytes) != gotox.ADDRESS_SIZE {
 				rejectWithErrorJSON(w, "invalid_toxid", "The Tox ID you entered is invalid.")
 				return
 			}
@@ -163,32 +163,28 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			friendID, err := libtox.AddFriend(FriendIDbyte, []byte(incomingData.Message))
+			friendID, err := libtox.FriendAdd(friendAddressBytes, incomingData.Message)
 			if err != nil {
 				switch err {
-				case golibtox.FaerrNoMessage:
+				case gotox.FaerrNoMessage:
 					rejectWithErrorJSON(w, "no_message", "An invitation message is required.")
 					return
-
-				case golibtox.FaerrTooLong:
+				case gotox.FaerrTooLong:
 					rejectWithErrorJSON(w, "invalid_message", "The message you entered is too long.")
 					return
-
-				case golibtox.FaerrOwnKey:
+				case gotox.FaerrOwnKey:
 					fallthrough
-				case golibtox.FaerrBadChecksum:
+				case gotox.FaerrBadChecksum:
 					fallthrough
-				case golibtox.FaerrSetNewNospam:
+				case gotox.FaerrSetNewNospam:
 					rejectWithErrorJSON(w, "invalid_toxid", "The Tox ID you entered is invalid.")
 					return
-
-				case golibtox.FaerrAlreadySent:
+				case gotox.FaerrAlreadySent:
 					rejectWithErrorJSON(w, "already_send", "A friend request to this person has already send.")
 					return
-
-				case golibtox.FaerrUnkown:
+				case gotox.FaerrUnkown:
 					fallthrough
-				case golibtox.FaerrNoMem:
+				case gotox.FaerrNoMem:
 				default:
 					rejectWithDefaultErrorJSON(w)
 					return
@@ -198,7 +194,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		case "/post/delete_friend":
 			type friend struct {
-				Number int32 `json:"friend"`
+				Number uint32 `json:"friend"`
 			}
 
 			var incomingData friend
@@ -208,7 +204,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			err = libtox.DelFriend(incomingData.Number)
+			err = libtox.FriendDelete(incomingData.Number)
 			if err != nil {
 				rejectWithDefaultErrorJSON(w)
 				return

@@ -24,7 +24,7 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"github.com/organ/golibtox"
+	"github.com/codedust/go-tox"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -35,21 +35,17 @@ import (
 type Server struct {
 	Address   string
 	Port      uint16
-	PublicKey string
+	PublicKey []byte
 }
 
-var libtox *golibtox.Tox
+var libtox *gotox.Tox
 
-// TODO
 // Map of active file transfers
-var transfers = make(map[uint8]*os.File)
+var transfers = make(map[uint32]*os.File)
+var transfersFilesizes = make(map[uint32]uint64)
 
 func main() {
-	var err error
-	libtox, err = golibtox.New(&golibtox.Options{true, false, false, "127.0.0.1", 5555})
-	if err != nil {
-		panic(err)
-	}
+	var newToxInstance bool = false
 
 	//TODO change file location
 	var toxSaveFilepath string
@@ -57,61 +53,67 @@ func main() {
 	flag.Parse()
 	fmt.Println("Data will be saved to", toxSaveFilepath)
 
-	if err := loadData(libtox, toxSaveFilepath); err != nil {
-		fmt.Println("Setting username to default: WebTox User")
-		libtox.SetName("WebTox User")
-		libtox.SetStatusMessage([]byte("WebToxing around..."))
-		libtox.SetUserStatus(golibtox.USERSTATUS_NONE)
-	} else {
-		name, err := libtox.GetSelfName()
-		if err != nil {
-			fmt.Println("Setting username to default: WebTox User")
-			libtox.SetName("WebTox User")
-		}
-		fmt.Println("Username:", name)
-
-		if _, err = libtox.GetSelfStatusMessage(); err != nil {
-			if err = libtox.SetStatusMessage([]byte("WebToxing around...")); err != nil {
-				panic(err)
-			}
-		}
-
-		if _, err = libtox.GetSelfUserStatus(); err != nil {
-			if err = libtox.SetUserStatus(golibtox.USERSTATUS_NONE); err != nil {
-				panic(err)
-			}
-		}
+	data, err := loadData(toxSaveFilepath)
+	if err != nil {
+		newToxInstance = true
 	}
 
-	toxid, err := libtox.GetAddress()
+	o := &gotox.Options{true, true, gotox.PROXY_TYPE_NONE, "127.0.0.1", 5555, 0, 0}
+	libtox, err = gotox.New(o, data)
+	if err != nil {
+		panic(err)
+	}
+
+	var toxid []byte
+
+	toxid, err = libtox.SelfGetAddress()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Tox ID:", strings.ToUpper(hex.EncodeToString(toxid)))
 
+	if newToxInstance {
+		fmt.Println("Setting username to default: WebTox User")
+		libtox.SelfSetName("WebTox User")
+		libtox.SelfSetStatusMessage("WebToxing around...")
+		libtox.SelfSetStatus(gotox.USERSTATUS_NONE)
+	} else {
+		name, err := libtox.SelfGetName()
+		if err != nil {
+			fmt.Println("Setting username to default: WebTox User")
+			libtox.SelfSetName("WebTox User")
+		} else {
+			fmt.Println("Username:", name)
+		}
+
+		if _, err = libtox.SelfGetStatusMessage(); err != nil {
+			if err = libtox.SelfSetStatusMessage("WebToxing around..."); err != nil {
+				panic(err)
+			}
+		}
+
+		if _, err = libtox.SelfGetStatus(); err != nil {
+			if err = libtox.SelfSetStatus(gotox.USERSTATUS_NONE); err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	// Register our callbacks
 	libtox.CallbackFriendRequest(onFriendRequest)
 	libtox.CallbackFriendMessage(onFriendMessage)
-	libtox.CallbackConnectionStatus(onConnectionStatus)
-	libtox.CallbackNameChange(onNameChange)
-	libtox.CallbackStatusMessage(onStatusMessage)
-	libtox.CallbackUserStatus(onUserStatus)
-	libtox.CallbackFileSendRequest(onFileSendRequest)
-	libtox.CallbackFileControl(onFileControl)
-	libtox.CallbackFileData(onFileData)
-	/**
-	tox_callback_friend_action
-	tox_callback_group_action
-	tox_callback_group_invite
-	tox_callback_group_message
-	tox_callback_group_namelist_change
-	tox_callback_read_receipt
-	tox_callback_typing_change
-	**/
+	libtox.CallbackFriendConnectionStatusChanges(onFriendConnectionStatusChanges)
+	libtox.CallbackFriendNameChanges(onFriendNameChanges)
+	libtox.CallbackFriendStatusMessageChanges(onFriendStatusMessageChanges)
+	libtox.CallbackFriendStatusChanges(onFriendStatusChanges)
+	libtox.CallbackFileRecv(onFileRecv)
+	libtox.CallbackFileRecvControl(onFileRecvControl)
+	libtox.CallbackFileRecvChunk(onFileRecvChunk)
 
 	// Connect to the network
 	// TODO add more servers (as fallback)
-	server := &Server{"192.254.75.98", 33445, "951C88B7E75C867418ACDB5D273821372BB5BD652740BCDF623A4FA293E75D2F"}
+	pubkey, _ := hex.DecodeString("04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F")
+	server := &Server{"144.76.60.215", 33445, pubkey}
 
 	err = libtox.BootstrapFromAddress(server.Address, server.Port, server.PublicKey)
 	if err != nil {
@@ -139,7 +141,7 @@ func main() {
 			return
 
 		case <-ticker.C:
-			libtox.Do()
+			libtox.Iterate()
 		}
 	}
 }
