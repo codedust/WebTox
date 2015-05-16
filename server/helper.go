@@ -1,9 +1,6 @@
 package main
 
 import (
-	"crypto/rand"
-	"crypto/sha512"
-	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -115,21 +112,18 @@ func getUserprofilePath() string {
 	return os.Getenv("HOME")
 }
 
-func randomString(len int) string {
-	bs := make([]byte, len)
-	_, err := rand.Reader.Read(bs)
-	if err != nil {
-		// TODO
-		panic("Error generating random string")
+func saveData(t *gotox.Tox, filepath string) error {
+	if len(filepath) == 0 {
+		return errors.New("Empty path")
 	}
 
-	return base64.StdEncoding.EncodeToString(bs)
-}
+	data, err := t.GetSavedata()
+	if err != nil {
+		return err
+	}
 
-func sha512Sum(s string) string {
-	hasher := sha512.New()
-	hasher.Write([]byte(s))
-	return hex.EncodeToString(hasher.Sum(nil))
+	err = ioutil.WriteFile(filepath, data, 0644)
+	return err
 }
 
 func loadData(filepath string) ([]byte, error) {
@@ -143,18 +137,4 @@ func loadData(filepath string) ([]byte, error) {
 	}
 
 	return data, err
-}
-
-func saveData(t *gotox.Tox, filepath string) error {
-	if len(filepath) == 0 {
-		return errors.New("Empty path")
-	}
-
-	data, err := t.GetSavedata()
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(filepath, data, 0644)
-	return err
 }

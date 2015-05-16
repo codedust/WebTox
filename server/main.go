@@ -21,10 +21,12 @@
 package main
 
 import (
+	"./httpserve"
 	"encoding/hex"
 	"flag"
 	"fmt"
 	"github.com/codedust/go-tox"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -144,4 +146,20 @@ func main() {
 			libtox.Iterate()
 		}
 	}
+}
+
+func serveGUI() {
+	mux := http.NewServeMux()
+	mux.Handle("/events", handleWS)
+	mux.Handle("/api/", handleAPI)
+	mux.Handle("/", http.FileServer(http.Dir("../html")))
+
+	// add authentication
+	// TODO: no auth if no password is set
+	// TODO store password in db and allow the user to change it
+	handleAuth := httpserve.BasicAuthHandler(mux, "user", "5b722b307fce6c944905d132691d5e4a2214b7fe92b738920eb3fce3a90420a19511c3010a0e7712b054daef5b57bad59ecbd93b3280f210578f547f4aed4d25")
+
+	// TODO support 0.0.0.0 and different ports
+	httpserve.CreateCertificateIfNotExist(CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", "localhost", 3072)
+	httpserve.ListenAndUpgradeToHTTPS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", handleAuth)
 }

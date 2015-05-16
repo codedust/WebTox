@@ -1,8 +1,11 @@
-package main
+package httpserve
 
 import (
 	"bytes"
+	"crypto/rand"
+	"crypto/sha512"
 	"encoding/base64"
+	"encoding/hex"
 	pseudoRandom "math/rand"
 	"net/http"
 	"strings"
@@ -11,14 +14,11 @@ import (
 )
 
 var (
-	sessions     = make(map[string]bool)
-	sessionsMut  sync.Mutex
-	AuthUser     string = "user"
-	AuthPassword string = "5b722b307fce6c944905d132691d5e4a2214b7fe92b738920eb3fce3a90420a19511c3010a0e7712b054daef5b57bad59ecbd93b3280f210578f547f4aed4d25" // "pass"
-	// TODO store password in db and allow the user to change it
+	sessions    = make(map[string]bool)
+	sessionsMut sync.Mutex
 )
 
-func basicAuthHandler(next http.Handler) http.Handler {
+func BasicAuthHandler(next http.Handler, user string, password string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("sessionid")
 		if err == nil && cookie != nil {
@@ -51,17 +51,21 @@ func basicAuthHandler(next http.Handler) http.Handler {
 			return
 		}
 
-		if string(authFields[0]) != AuthUser {
+		if string(authFields[0]) != user {
 			rejectWithHttpErrorNotAuthorized(w)
 			return
 		}
 
-		if sha512Sum(string(authFields[1])) != AuthPassword {
+		if sha512Sum(string(authFields[1])) != password {
 			rejectWithHttpErrorNotAuthorized(w)
 			return
 		}
 
-		sessionid := randomString(32)
+		sessionid, err := randomString(32)
+		if err != nil {
+			rejectWithHttpErrorNotAuthorized(w)
+			return
+		}
 		sessionsMut.Lock()
 		sessions[sessionid] = true
 		sessionsMut.Unlock()
@@ -79,4 +83,20 @@ func rejectWithHttpErrorNotAuthorized(w http.ResponseWriter) {
 	time.Sleep(time.Duration(pseudoRandom.Intn(100)+100) * time.Millisecond)
 	w.Header().Set("WWW-Authenticate", "Basic realm=\"Authorization Required\"")
 	http.Error(w, "Not Authorized", http.StatusUnauthorized)
+}
+
+func randomString(len int) (string, error) {
+	bs := make([]byte, len)
+	_, err := rand.Reader.Read(bs)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(bs), nil
+}
+
+func sha512Sum(s string) string {
+	hasher := sha512.New()
+	hasher.Write([]byte(s))
+	return hex.EncodeToString(hasher.Sum(nil))
 }

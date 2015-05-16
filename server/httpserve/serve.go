@@ -1,43 +1,28 @@
-package main
+package httpserve
 
 import (
 	"bufio"
 	"crypto/tls"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
 )
 
-func serveGUI() {
-	// TODO support 0.0.0.0 and different ports
-	netListener, err := net.Listen("tcp", ":8080")
+func ListenAndUpgradeToHTTPS(addr string, certFile string, keyFile string, handler http.Handler) error {
+	netListener, err := net.Listen("tcp", addr)
 	if err != nil {
-		fmt.Println("[serveGUI] Could not bind server to port")
-		panic(err)
+		return err
 	}
 
-	// load the certificate
-	cert, err := loadCertificate(CFG_DATA_DIR, CFG_CERT_PREFIX)
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
-		fmt.Println("[serveGUI] Could not load certificate")
-		panic(err)
+		return err
 	}
 
 	// create a listener that can listen to encrypted and unencrypted connections
 	listener := &muxListener{netListener, &tls.Config{
 		Certificates: []tls.Certificate{cert},
-		ServerName:   "WebTox",
 	}}
-
-	mux := http.NewServeMux()
-	mux.Handle("/events", handleWS)
-	mux.Handle("/api/", handleAPI)
-	mux.Handle("/", http.FileServer(http.Dir("../html")))
-
-	// add authentication
-	// TODO: no auth if no password is set
-	handleAuth := basicAuthHandler(mux)
 
 	// redirect from http to https
 	handleRedirect := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -46,14 +31,16 @@ func serveGUI() {
 			r.URL.Scheme = "https"
 			http.Redirect(w, r, r.URL.String(), http.StatusFound)
 		} else {
-			handleAuth.ServeHTTP(w, r)
+			handler.ServeHTTP(w, r)
 		}
 	})
 
 	err = http.Serve(listener, handleRedirect)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 type muxListener struct {
