@@ -40,7 +40,7 @@ type Server struct {
 	PublicKey []byte
 }
 
-var libtox *gotox.Tox
+var tox *gotox.Tox
 
 // Map of active file transfers
 var transfers = make(map[uint32]*os.File)
@@ -48,6 +48,7 @@ var transfersFilesizes = make(map[uint32]uint64)
 
 func main() {
 	var newToxInstance bool = false
+	var options *gotox.Options
 
 	//TODO change file location
 	var toxSaveFilepath string
@@ -55,20 +56,30 @@ func main() {
 	flag.Parse()
 	fmt.Println("Data will be saved to", toxSaveFilepath)
 
-	data, err := loadData(toxSaveFilepath)
-	if err != nil {
+	savedata, err := loadData(toxSaveFilepath)
+	if err == nil {
+		options = &gotox.Options{
+			true, true,
+			gotox.TOX_PROXY_TYPE_NONE, "127.0.0.1", 5555, 0, 0,
+			3389,
+			gotox.TOX_SAVEDATA_TYPE_TOX_SAVE, savedata}
+	} else {
+		options = &gotox.Options{
+			true, true,
+			gotox.TOX_PROXY_TYPE_NONE, "127.0.0.1", 5555, 0, 0,
+			3389,
+			gotox.TOX_SAVEDATA_TYPE_NONE, nil}
 		newToxInstance = true
 	}
 
-	o := &gotox.Options{true, true, gotox.PROXY_TYPE_NONE, "127.0.0.1", 5555, 0, 0}
-	libtox, err = gotox.New(o, data)
+	tox, err = gotox.New(options)
 	if err != nil {
 		panic(err)
 	}
 
 	var toxid []byte
 
-	toxid, err = libtox.SelfGetAddress()
+	toxid, err = tox.SelfGetAddress()
 	if err != nil {
 		panic(err)
 	}
@@ -76,48 +87,48 @@ func main() {
 
 	if newToxInstance {
 		fmt.Println("Setting username to default: WebTox User")
-		libtox.SelfSetName("WebTox User")
-		libtox.SelfSetStatusMessage("WebToxing around...")
-		libtox.SelfSetStatus(gotox.USERSTATUS_NONE)
+		tox.SelfSetName("WebTox User")
+		tox.SelfSetStatusMessage("WebToxing around...")
+		tox.SelfSetStatus(gotox.TOX_USERSTATUS_NONE)
 	} else {
-		name, err := libtox.SelfGetName()
+		name, err := tox.SelfGetName()
 		if err != nil {
 			fmt.Println("Setting username to default: WebTox User")
-			libtox.SelfSetName("WebTox User")
+			tox.SelfSetName("WebTox User")
 		} else {
 			fmt.Println("Username:", name)
 		}
 
-		if _, err = libtox.SelfGetStatusMessage(); err != nil {
-			if err = libtox.SelfSetStatusMessage("WebToxing around..."); err != nil {
+		if _, err = tox.SelfGetStatusMessage(); err != nil {
+			if err = tox.SelfSetStatusMessage("WebToxing around..."); err != nil {
 				panic(err)
 			}
 		}
 
-		if _, err = libtox.SelfGetStatus(); err != nil {
-			if err = libtox.SelfSetStatus(gotox.USERSTATUS_NONE); err != nil {
+		if _, err = tox.SelfGetStatus(); err != nil {
+			if err = tox.SelfSetStatus(gotox.TOX_USERSTATUS_NONE); err != nil {
 				panic(err)
 			}
 		}
 	}
 
 	// Register our callbacks
-	libtox.CallbackFriendRequest(onFriendRequest)
-	libtox.CallbackFriendMessage(onFriendMessage)
-	libtox.CallbackFriendConnectionStatusChanges(onFriendConnectionStatusChanges)
-	libtox.CallbackFriendNameChanges(onFriendNameChanges)
-	libtox.CallbackFriendStatusMessageChanges(onFriendStatusMessageChanges)
-	libtox.CallbackFriendStatusChanges(onFriendStatusChanges)
-	libtox.CallbackFileRecv(onFileRecv)
-	libtox.CallbackFileRecvControl(onFileRecvControl)
-	libtox.CallbackFileRecvChunk(onFileRecvChunk)
+	tox.CallbackFriendRequest(onFriendRequest)
+	tox.CallbackFriendMessage(onFriendMessage)
+	tox.CallbackFriendConnectionStatusChanges(onFriendConnectionStatusChanges)
+	tox.CallbackFriendNameChanges(onFriendNameChanges)
+	tox.CallbackFriendStatusMessageChanges(onFriendStatusMessageChanges)
+	tox.CallbackFriendStatusChanges(onFriendStatusChanges)
+	tox.CallbackFileRecv(onFileRecv)
+	tox.CallbackFileRecvControl(onFileRecvControl)
+	tox.CallbackFileRecvChunk(onFileRecvChunk)
 
 	// Connect to the network
 	// TODO add more servers (as fallback)
 	pubkey, _ := hex.DecodeString("04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F")
 	server := &Server{"144.76.60.215", 33445, pubkey}
 
-	err = libtox.BootstrapFromAddress(server.Address, server.Port, server.PublicKey)
+	err = tox.BootstrapFromAddress(server.Address, server.Port, server.PublicKey)
 	if err != nil {
 		panic(err)
 	}
@@ -134,16 +145,16 @@ func main() {
 		select {
 		case <-c:
 			fmt.Println("Saving...")
-			if err := saveData(libtox, toxSaveFilepath); err != nil {
+			if err := saveData(tox, toxSaveFilepath); err != nil {
 				fmt.Println(err)
 			}
 
 			fmt.Println("Killing")
-			libtox.Kill()
+			tox.Kill()
 			return
 
 		case <-ticker.C:
-			libtox.Iterate()
+			tox.Iterate()
 		}
 	}
 }

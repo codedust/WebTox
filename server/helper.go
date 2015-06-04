@@ -34,29 +34,29 @@ func rejectWithDefaultErrorJSON(w http.ResponseWriter) {
 	http.Error(w, string(jsonErr), 422)
 }
 
-func getUserStatusAsString(status gotox.UserStatus) string {
+func getUserStatusAsString(status gotox.ToxUserStatus) string {
 	switch status {
-	case gotox.USERSTATUS_NONE:
+	case gotox.TOX_USERSTATUS_NONE:
 		return "NONE"
-	case gotox.USERSTATUS_AWAY:
+	case gotox.TOX_USERSTATUS_AWAY:
 		return "AWAY"
-	case gotox.USERSTATUS_BUSY:
+	case gotox.TOX_USERSTATUS_BUSY:
 		return "BUSY"
 	default:
 		return "INVALID"
 	}
 }
 
-func getUserStatusFromString(status string) gotox.UserStatus {
+func getUserStatusFromString(status string) gotox.ToxUserStatus {
 	switch status {
 	case "NONE":
-		return gotox.USERSTATUS_NONE
+		return gotox.TOX_USERSTATUS_NONE
 	case "AWAY":
-		return gotox.USERSTATUS_AWAY
+		return gotox.TOX_USERSTATUS_AWAY
 	case "BUSY":
-		return gotox.USERSTATUS_BUSY
+		return gotox.TOX_USERSTATUS_BUSY
 	default:
-		return gotox.USERSTATUS_NONE
+		return gotox.TOX_USERSTATUS_NONE
 	}
 }
 
@@ -71,7 +71,7 @@ func getFriendListJSON() (string, error) {
 		Online    bool     `json:"online"`
 	}
 
-	friend_ids, err := libtox.SelfGetFriendlist()
+	friend_ids, err := tox.SelfGetFriendlist()
 	if err != nil {
 		return "", err
 	}
@@ -79,11 +79,11 @@ func getFriendListJSON() (string, error) {
 	friends := make([]friend, len(friend_ids))
 	for i, friend_num := range friend_ids {
 		// TODO: handle errors
-		id, _ := libtox.FriendGetPublickey(friend_num)
-		name, _ := libtox.FriendGetName(friend_num)
-		connected, _ := libtox.FriendGetConnectionStatus(friend_num)
-		userstatus, _ := libtox.FriendGetStatus(friend_num)
-		status_msg, _ := libtox.FriendGetStatusMessage(friend_num)
+		id, _ := tox.FriendGetPublickey(friend_num)
+		name, _ := tox.FriendGetName(friend_num)
+		connected, _ := tox.FriendGetConnectionStatus(friend_num)
+		userstatus, _ := tox.FriendGetStatus(friend_num)
+		status_msg, _ := tox.FriendGetStatusMessage(friend_num)
 
 		newfriend := friend{
 			Number:    friend_num,
@@ -92,7 +92,7 @@ func getFriendListJSON() (string, error) {
 			Name:      name,
 			Status:    getUserStatusAsString(userstatus),
 			StatusMsg: string(status_msg),
-			Online:    connected != gotox.CONNECTION_NONE,
+			Online:    connected != gotox.TOX_CONNECTION_NONE,
 		}
 
 		friends[i] = newfriend
