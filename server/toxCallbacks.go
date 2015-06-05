@@ -119,7 +119,7 @@ func onFriendStatusChanges(t *gotox.Tox, friendnumber uint32, userstatus gotox.T
 
 func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind uint32, filesize uint64, filename string) {
 	// Accept any file send request
-	t.SendFileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
+	t.FileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
 	// Init *File handle
 	f, _ := os.Create("example_" + filename)
 	// Append f to the map[uint8]*os.File

@@ -128,7 +128,7 @@ func main() {
 	pubkey, _ := hex.DecodeString("04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F")
 	server := &Server{"144.76.60.215", 33445, pubkey}
 
-	err = tox.BootstrapFromAddress(server.Address, server.Port, server.PublicKey)
+	err = tox.Bootstrap(server.Address, server.Port, server.PublicKey)
 	if err != nil {
 		panic(err)
 	}
