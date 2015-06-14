@@ -21,7 +21,7 @@
 package main
 
 import (
-	"./httpserve"
+	"github.com/codedust/go-httpserve"
 	"encoding/hex"
 	"flag"
 	"fmt"
@@ -166,11 +166,15 @@ func serveGUI() {
 	mux.Handle("/", http.FileServer(http.Dir("../html")))
 
 	// add authentication
-	// TODO: no auth if no password is set
+	salt, err := httpserve.RandomString(32)
+	if err != nil {
+		panic("could not generate salt")
+	}
+
 	// TODO store password in db and allow the user to change it
-	handleAuth := httpserve.BasicAuthHandler(mux, "user", "5b722b307fce6c944905d132691d5e4a2214b7fe92b738920eb3fce3a90420a19511c3010a0e7712b054daef5b57bad59ecbd93b3280f210578f547f4aed4d25")
+	handleAuth := httpserve.BasicAuthHandler(mux, "user", httpserve.Sha512Sum("pass"+salt), salt)
 
 	// TODO support 0.0.0.0 and different ports
 	httpserve.CreateCertificateIfNotExist(CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", "localhost", 3072)
-	httpserve.ListenAndUpgradeToHTTPS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", handleAuth)
+	httpserve.ListenAndUpgradeTLS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", handleAuth)
 }
