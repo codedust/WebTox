@@ -66,15 +66,15 @@
         <option value="1">Online</option>
       </select>
       <button id="friend-request-button" class="btn btn-toxgreen" data-toggle="modal" href="#modal-friend-requests">1 Friend Request</button>
-      <a href="#" class="contact" ng-class="{active: contact.active}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number)" ng-show="!onlyShowOnlineContacts || contact.online">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && !contact.notify" src="img/toxui/dot_online.png" alt="Online">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && contact.notify"  src="img/toxui/dot_online_notification.png" alt="Online">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && !contact.notify" src="img/toxui/dot_idle.png" alt="Idle">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && contact.notify"  src="img/toxui/dot_idle_notification.png" alt="Idle">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && !contact.notify" src="img/toxui/dot_busy.png" alt="Busy">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && contact.notify"  src="img/toxui/dot_busy_notification.png" alt="Busy">
-        <img class="contact-status-icon" ng-show="!contact.online && !contact.notify" src="img/toxui/dot_offline.png" alt="Offline">
-        <img class="contact-status-icon" ng-show="!contact.online && contact.notify"  src="img/toxui/dot_offline_notification.png" alt="Offline">
+      <a href="#" class="contact" ng-class="{active: contacts[activecontactindex] == contact}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number)" ng-show="!onlyShowOnlineContacts || contact.online">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Online"  src="img/toxui/dot_online.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && contact.last_msg_read < contact.chat[0].time"                                alt="Online"  src="img/toxui/dot_online_notification.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Idle"    src="img/toxui/dot_idle.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && contact.last_msg_read < contact.chat[0].time"                                alt="Idle"    src="img/toxui/dot_idle_notification.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Busy"    src="img/toxui/dot_busy.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && contact.last_msg_read < contact.chat[0].time"                                alt="Busy"    src="img/toxui/dot_busy_notification.png">
+        <img class="contact-status-icon" ng-show="!contact.online && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)"                            alt="Offline" src="img/toxui/dot_offline.png">
+        <img class="contact-status-icon" ng-show="!contact.online && contact.last_msg_read < contact.chat[0].time"                                                           alt="Offline" src="img/toxui/dot_offline_notification.png">
         <img class="contact-avatar avatar" src="img/toxui/blankavatar.png" alt="avatar">
         <div class="contact-name">{{contact.name || "[Name not set]"}}</div>
         <div class="contact-status-msg">{{contact.status_msg}}</div>
@@ -119,11 +119,11 @@
         <div id="mainview-chat-header-status-msg">{{contacts[activecontactindex].status_msg}}</div>
       </div>
       <div id="mainview-chat-body">
-        <div ng-repeat="chat in contacts[activecontactindex].chat" ng-class="{messageself: chat[0] === -2}">
-          <span class="chatname" ng-if="chat[0] === -2">You:</span>
-          <span class="chatname" ng-if="chat[0] >= 0">{{contacts[getContactIndexByNum(chat[0])].name || "unknown"}}:</span>
-          <span class="chatmsg">{{chat[1]}}</span>
-          <span class="timestamp">{{chat[2] | date : 'H:mm:ss'}}</span>
+        <div ng-repeat="chat in contacts[activecontactindex].chat.slice().reverse()" ng-class="{messageself: !chat.isIncoming}">
+          <span class="chatname" ng-if="!chat.isIncoming">{{profile.username}}</span>
+          <span class="chatname" ng-if="chat.isIncoming">{{contacts[activecontactindex].name}}</span>
+          <span class="chatmsg">{{chat.message}}</span>
+          <span class="timestamp">{{chat.time | date : 'H:mm:ss'}}</span>
         </div>
       </div>
       <div id="mainview-chat-footer">
@@ -238,10 +238,10 @@
           <p translate>WebTox includes the following software or portions thereof:</p>
           <ul>
             <li><a href="https://github.com/irungentoo/toxcore">irungentoo/toxcore</a>, Copyright &copy; 2013 Tox project.</li>
-            <li><a href="https://github.com/organ/golibtox">organ/golibtox</a>, Copyright &copy; 2014 The golibtox Authors.</li>
-            <li><a href="https://github.com/ItsDuke/Tox-UI">ItsDuke/Tox-UI</a>, Copyright &copy; 2014 The Tox-UI Authors.</li>
-            <li><a href="http://golang.org/">The Go Programming Language</a>, Copyright &copy; 2012 The Go Authors.</li>
-            <li><a href="http://www.gorillatoolkit.org/">gorilla/websocket</a>, Copyright &copy; 2013 The Gorilla WebSocket Authors.</li>
+            <li><a href="https://github.com/codedust/go-tox">codedust/go-tox</a>, Copyright &copy; 2015 The gotox authors.</li>
+            <li><a href="https://github.com/ItsDuke/Tox-UI">ItsDuke/Tox-UI</a>, Copyright &copy; 2014 The Tox-UI authors.</li>
+            <li><a href="http://golang.org/">The Go Programming Language</a>, Copyright &copy; 2012 The Go authors.</li>
+            <li><a href="http://www.gorillatoolkit.org/">gorilla/websocket</a>, Copyright &copy; 2013 The Gorilla WebSocket authors.</li>
             <li><a href="https://jquery.com/">jQuery</a>, Copyright &copy; 2005-2014 jQuery Foundation, Inc.</li>
             <li><a href="https://angularjs.org/">AngularJS</a>, Copyright &copy; 2010-2014 Google, Inc.</li>
             <li><a href="http://getbootstrap.com/">Bootstrap</a>, Copyright &copy; 2011-2014 Twitter, Inc.</li>

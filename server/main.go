@@ -21,11 +21,13 @@
 package main
 
 import (
-	"github.com/codedust/go-httpserve"
+	"./persistence"
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"github.com/codedust/go-httpserve"
 	"github.com/codedust/go-tox"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -34,13 +36,11 @@ import (
 	"time"
 )
 
-type Server struct {
-	Address   string
-	Port      uint16
-	PublicKey []byte
-}
-
+// the global tox instance
 var tox *gotox.Tox
+
+// the global connection to the database
+var storage *persistence.StorageConn
 
 // Map of active file transfers
 var transfers = make(map[uint32]*os.File)
@@ -50,11 +50,18 @@ func main() {
 	var newToxInstance bool = false
 	var options *gotox.Options
 
+	var err error
+	storage, err = persistence.Open("../data/userdata.db")
+	if err != nil {
+		log.Panic("DB initialisation failed.")
+	}
+	defer storage.Close()
+
 	//TODO change file location
 	var toxSaveFilepath string
 	flag.StringVar(&toxSaveFilepath, "p", filepath.Join(getUserprofilePath(), "webtox_save"), "path to save file")
 	flag.Parse()
-	fmt.Println("Data will be saved to", toxSaveFilepath)
+	fmt.Println("ToxData will be saved to", toxSaveFilepath)
 
 	savedata, err := loadData(toxSaveFilepath)
 	if err == nil {
@@ -126,9 +133,7 @@ func main() {
 	// Connect to the network
 	// TODO add more servers (as fallback)
 	pubkey, _ := hex.DecodeString("04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F")
-	server := &Server{"144.76.60.215", 33445, pubkey}
-
-	err = tox.Bootstrap(server.Address, server.Port, server.PublicKey)
+	err = tox.Bootstrap("144.76.60.215", 33445, pubkey)
 	if err != nil {
 		panic(err)
 	}

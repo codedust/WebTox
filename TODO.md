@@ -3,25 +3,21 @@ TODO
 
 - CSRF prevention
 - typing notifications (mit padding-bottom)
-- auto-scroll in chat window
-- set own status (online/away/idle/invisible)
-- store chat data and more server-side
+- fake offline messages
 - enter new name for contacts
 - receive friend requests UI
-- add support for toxme.se
 - links in chat messages
+- file transfer
+- settings: notifications
+- dont show notifications when browser is focused
+- add sounds
 - group chats (waiting for gotox update)
-- some kind of authentication (for remote access)
+- add support for toxme.se
 - localization (www.transifex.com?)
 - emoticons
-- file transfer
 - A/V
 - auto-updates / update-notification
 - Mobile UI
 - power consumption on mobile devices
 - package as a WebApp
-- settings: notifications
-- dont show notifications when browser is focused
 - context menu (right click to contacts to remove etc)
-- add sounds
-- better logging

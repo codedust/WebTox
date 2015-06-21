@@ -40,7 +40,8 @@ func onFriendMessage(t *gotox.Tox, friendnumber uint32, messagetype gotox.ToxMes
 		IsAction: messagetype == gotox.TOX_MESSAGE_TYPE_ACTION,
 	})
 
-	// TODO save messages server-side
+	publicKey, _ := tox.FriendGetPublickey(friendnumber)
+	storage.StoreMessage(hex.EncodeToString(publicKey), true, messagetype == gotox.TOX_MESSAGE_TYPE_ACTION, message)
 
 	broadcastToClients(string(e))
 }

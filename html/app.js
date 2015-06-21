@@ -97,7 +97,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     tox_id: "Loading...",
   };
   $scope.contacts = [];
-  $scope.activecontactindex = 0;
+  $scope.activecontactindex = -1;
   $scope.messagetosend = "";
   $scope.new_friend_request = {
     friend_id: "",
@@ -143,11 +143,14 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   $scope.showChat = function(friendnumber){
     for(var i in $scope.contacts) {
       if ($scope.contacts[i].number === friendnumber) {
-        $scope.contacts[i].active = true;
-        $scope.contacts[i].notify = false;
         $scope.activecontactindex = i;
-      } else {
-        $scope.contacts[i].active = false;
+        $scope.sendMessageRead(friendnumber);
+
+        window.setTimeout(function(){
+          $("#mainview-chat-body").scrollTop($("#mainview-chat-body").prop("scrollHeight"));
+        }, 10);
+
+        break;
       }
     }
     $scope.active_mainview = $scope.mainview.CHAT;
@@ -174,9 +177,21 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       // TODO
     });
 
-    $scope.contacts[$scope.activecontactindex].chat.push([-2, $scope.messagetosend.replace(/\n/g, "<br>"), Date.now()]);
+    $scope.contacts[$scope.activecontactindex].chat.unshift({"isIncoming": false, "isAction": false, "message": $scope.messagetosend.replace(/\n/g, "<br>"), "time": Date.now()});
+    $scope.contacts[$scope.activecontactindex].last_msg_read = Date.now();
     $scope.messagetosend = "";
+    $scope.sendMessageRead($scope.contacts[$scope.activecontactindex].number);
+
+    $("#mainview-chat-body").animate({"scrollTop": $("#mainview-chat-body").prop("scrollHeight")}, 1000);
   };
+
+  $scope.sendMessageRead = function(friendnumber) {
+    $http.post('api/post/message_read_receipt', {
+      friend: friendnumber
+    }).success(function(){
+      $scope.contacts[$scope.activecontactindex].last_msg_read = Date.now()
+    });
+  }
 
   $scope.sendFriendRequest = function(friend_id, message){
     $http.post('api/post/friend_request', {
@@ -261,12 +276,14 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       switch(data.type) {
       case 'friend_message':
         var i = $scope.getContactIndexByNum(data.friend)
-        if (i >= 0 && i < $scope.contacts.length)
-          $scope.contacts[i].chat.push([data.friend, data.message, data.time]);
-          if(!$scope.contacts[i].active) $scope.contacts[i].notify = true;
+        if (i >= 0 && i < $scope.contacts.length) {
+          $scope.contacts[i].chat.unshift({"message": data.message, "isIncoming": true, "isAction": data.isAction, "time": data.time});
           $scope.showNotification($scope.contacts[i].name, data.message, function(){
             $scope.showChat(data.friend); $scope.$apply();
           });
+
+          $("#mainview-chat-body").animate({"scrollTop": $("#mainview-chat-body").prop("scrollHeight")}, 1000);
+        }
         break;
 
       case 'name_changed':

@@ -282,8 +282,9 @@ body {
 #mainview-chat-header {
   position: absolute;
   top: 0; right: 0; left: 0;
+  z-index: 1;
   padding: 10px 8px 9px 10px;
-  /*border-bottom: 1px dotted #414141; */
+  background-color: white;
   box-shadow: 0 0 5px #414141; }
 
 #mainview-chat-header .avatar {
@@ -304,13 +305,18 @@ body {
 #mainview-chat-body {
   position: absolute;
   overflow: auto;
-  top: 70px; right:0; bottom: 70px; left: 0;
+  top: 70px; right:0; bottom: 80px; left: 0;
   padding: 10px; }
 
 #mainview-chat-body div .chatname {
-  font-weight: lighter; }
+  display: inline-block;
+  min-width: 7em;
+  margin-right: .5em;
+  color: #1c1c1c;
+  font-weight: bold;
+  text-align: right; }
 
-#mainview-chat-body .messageself .chatname {
+#mainview-chat-body .messageself, #mainview-chat-body .messageself .chatname {
   color: #414141; }
 
 #mainview-chat-body .timestamp {

@@ -61,14 +61,22 @@ func getUserStatusFromString(status string) gotox.ToxUserStatus {
 }
 
 func getFriendListJSON() (string, error) {
+	type Message struct {
+		Message    string `json:"message"`
+		IsIncoming bool   `json:"isIncoming"`
+		IsAction   bool   `json:"isAction"`
+		Time       int64  `json:"time"`
+	}
+
 	type friend struct {
-		Number    uint32   `json:"number"`
-		ID        string   `json:"id"`
-		Chat      []string `json:"chat"`
-		Name      string   `json:"name"`
-		Status    string   `json:"status"`
-		StatusMsg string   `json:"status_msg"`
-		Online    bool     `json:"online"`
+		Number          uint32    `json:"number"`
+		ID              string    `json:"id"`
+		Chat            []Message `json:"chat"`
+		LastMessageRead int64     `json:"last_msg_read"`
+		Name            string    `json:"name"`
+		Status          string    `json:"status"`
+		StatusMsg       string    `json:"status_msg"`
+		Online          bool      `json:"online"`
 	}
 
 	friend_ids, err := tox.SelfGetFriendlist()
@@ -79,20 +87,33 @@ func getFriendListJSON() (string, error) {
 	friends := make([]friend, len(friend_ids))
 	for i, friend_num := range friend_ids {
 		// TODO: handle errors
-		id, _ := tox.FriendGetPublickey(friend_num)
+		publicKey, _ := tox.FriendGetPublickey(friend_num)
 		name, _ := tox.FriendGetName(friend_num)
 		connected, _ := tox.FriendGetConnectionStatus(friend_num)
 		userstatus, _ := tox.FriendGetStatus(friend_num)
 		status_msg, _ := tox.FriendGetStatusMessage(friend_num)
+		dbMessages := storage.GetMessages(hex.EncodeToString(publicKey), -1) // TOOD set a limit
+		dbLastMessageRead, _ := storage.GetLastMessageRead(hex.EncodeToString(publicKey))
+
+		var messages []Message
+
+		for _, msg := range dbMessages {
+			messages = append(messages, Message{Message: msg.Message, IsIncoming: msg.IsIncoming, IsAction: msg.IsAction, Time: msg.Time})
+		}
+
+		if messages == nil {
+			messages = []Message{}
+		}
 
 		newfriend := friend{
-			Number:    friend_num,
-			ID:        strings.ToUpper(hex.EncodeToString(id)),
-			Chat:      []string{},
-			Name:      name,
-			Status:    getUserStatusAsString(userstatus),
-			StatusMsg: string(status_msg),
-			Online:    connected != gotox.TOX_CONNECTION_NONE,
+			Number:          friend_num,
+			ID:              strings.ToUpper(hex.EncodeToString(publicKey)),
+			Chat:            messages,
+			LastMessageRead: dbLastMessageRead,
+			Name:            name,
+			Status:          getUserStatusAsString(userstatus),
+			StatusMsg:       string(status_msg),
+			Online:          connected != gotox.TOX_CONNECTION_NONE,
 		}
 
 		friends[i] = newfriend

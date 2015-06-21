@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codedust/go-tox"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -13,13 +14,19 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 
 	if tox == nil {
-		fmt.Println("[handleAPI] ERROR: libtox is nil.")
+		log.Print("[handleAPI] ERROR: tox is nil.")
+		rejectWithDefaultErrorJSON(w)
+		return
+	}
+
+	if storage == nil {
+		log.Print("[handleAPI] ERROR: storage is nil.")
 		rejectWithDefaultErrorJSON(w)
 		return
 	}
 
 	request := r.URL.Path[len("/api"):]
-	fmt.Println("[handleAPI]", request)
+	log.Println("[handleAPI]", request)
 
 	switch {
 	// GET REQUESTS
@@ -87,6 +94,24 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				rejectWithDefaultErrorJSON(w)
 				return
 			}
+
+			publicKey, _ := tox.FriendGetPublickey(incomingData.Friend)
+			storage.StoreMessage(hex.EncodeToString(publicKey), false, false, incomingData.Message)
+
+		case "/post/message_read_receipt":
+			type friend struct {
+				Friend uint32 `json:"friend"`
+			}
+
+			var incomingData friend
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			publicKey, _ := tox.FriendGetPublickey(incomingData.Friend)
+			storage.SetLastMessageRead(hex.EncodeToString(publicKey))
 
 		case "/post/username":
 			type profile struct {
