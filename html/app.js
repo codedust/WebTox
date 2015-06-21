@@ -310,6 +310,11 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
         $scope.showNotification($scope.contacts[i].name+" is now "+(data.online?'online':'offline'));
         break;
 
+      case 'friendlist_update':
+        console.log("friendlist_update");
+        $scope.fetchContactlist();
+        break;
+
       }
       $scope.$apply();
     }

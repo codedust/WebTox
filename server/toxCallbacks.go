@@ -19,6 +19,16 @@ func onFriendRequest(t *gotox.Tox, publicKey []byte, message string) {
 		fmt.Println(err)
 	}
 	fmt.Printf(string(a))
+
+	type jsonEvent struct {
+		Type string `json:"type"`
+	}
+
+	e, _ := json.Marshal(jsonEvent{
+		Type: "friendlist_update",
+	})
+
+	broadcastToClients(string(e))
 }
 
 func onFriendMessage(t *gotox.Tox, friendnumber uint32, messagetype gotox.ToxMessageType, message string) {

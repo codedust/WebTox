@@ -59,7 +59,8 @@ func main() {
 
 	//TODO change file location
 	var toxSaveFilepath string
-	flag.StringVar(&toxSaveFilepath, "p", filepath.Join(getUserprofilePath(), "webtox_save"), "path to save file")
+	//flag.StringVar(&toxSaveFilepath, "p", filepath.Join(getUserprofilePath(), "webtox_save"), "path to save file")
+	flag.StringVar(&toxSaveFilepath, "p", filepath.Join("../data/webtox_save"), "path to save file")
 	flag.Parse()
 	fmt.Println("ToxData will be saved to", toxSaveFilepath)
 
