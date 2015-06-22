@@ -4,6 +4,7 @@ TODO
 - CSRF prevention
 - typing notifications (mit padding-bottom)
 - fake offline messages
+- fake online status
 - enter new name for contacts
 - receive friend requests UI
 - links in chat messages

@@ -103,6 +103,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     friend_id: "",
     message: "",
   };
+  $scope.curDate = Date.now(); // current unix timestap used to work around caching
 
   $scope.getContactIndexByNum = function(num){
     for(var i in $scope.contacts)
@@ -313,6 +314,11 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       case 'friendlist_update':
         console.log("friendlist_update");
         $scope.fetchContactlist();
+        break;
+
+      case 'avatar_update':
+        // reload avatar images
+        $scope.curDate = Date.now();
         break;
 
       }

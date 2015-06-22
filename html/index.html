@@ -75,7 +75,7 @@
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && contact.last_msg_read < contact.chat[0].time"                                alt="Busy"    src="img/toxui/dot_busy_notification.png">
         <img class="contact-status-icon" ng-show="!contact.online && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)"                            alt="Offline" src="img/toxui/dot_offline.png">
         <img class="contact-status-icon" ng-show="!contact.online && contact.last_msg_read < contact.chat[0].time"                                                           alt="Offline" src="img/toxui/dot_offline_notification.png">
-        <img class="contact-avatar avatar" src="img/toxui/blankavatar.png" alt="avatar">
+        <img class="contact-avatar avatar" ng-src="avatars/{{contact.publicKey}}.png?{{curDate}}" onerror="this.src = 'img/toxui/blankavatar.png';" alt="avatar">
         <div class="contact-name">{{contact.name || "[Name not set]"}}</div>
         <div class="contact-status-msg">{{contact.status_msg || "&nbsp;"}}</div>
       </a>

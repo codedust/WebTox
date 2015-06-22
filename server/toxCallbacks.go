@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log"
 	"github.com/codedust/go-tox"
 	"os"
 	"time"
@@ -20,20 +21,10 @@ func onFriendRequest(t *gotox.Tox, publicKey []byte, message string) {
 	}
 	fmt.Printf(string(a))
 
-	type jsonEvent struct {
-		Type string `json:"type"`
-	}
-
-	e, _ := json.Marshal(jsonEvent{
-		Type: "friendlist_update",
-	})
-
-	broadcastToClients(string(e))
+	broadcastToClients(createSimpleJSONEvent("friendlist_update"))
 }
 
 func onFriendMessage(t *gotox.Tox, friendnumber uint32, messagetype gotox.ToxMessageType, message string) {
-	fmt.Printf("New message from %d : %s\n", friendnumber, message)
-
 	type jsonEvent struct {
 		Type     string `json:"type"`
 		Friend   uint32 `json:"friend"`
@@ -57,8 +48,6 @@ func onFriendMessage(t *gotox.Tox, friendnumber uint32, messagetype gotox.ToxMes
 }
 
 func onFriendConnectionStatusChanges(t *gotox.Tox, friendnumber uint32, connectionStatus gotox.ToxConnection) {
-	fmt.Printf("Connection status changed: %d -> %v\n", friendnumber, connectionStatus)
-
 	type jsonEvent struct {
 		Type   string `json:"type"`
 		Friend uint32 `json:"friend"`
@@ -75,8 +64,6 @@ func onFriendConnectionStatusChanges(t *gotox.Tox, friendnumber uint32, connecti
 }
 
 func onFriendNameChanges(t *gotox.Tox, friendnumber uint32, newname string) {
-	fmt.Printf("Name changed: %d -> %s\n", friendnumber, newname)
-
 	type jsonEvent struct {
 		Type   string `json:"type"`
 		Friend uint32 `json:"friend"`
@@ -93,8 +80,6 @@ func onFriendNameChanges(t *gotox.Tox, friendnumber uint32, newname string) {
 }
 
 func onFriendStatusMessageChanges(t *gotox.Tox, friendnumber uint32, status string) {
-	fmt.Printf("Status message changed: %d -> %s\n", friendnumber, status)
-
 	type jsonEvent struct {
 		Type      string `json:"type"`
 		Friend    uint32 `json:"friend"`
@@ -111,8 +96,6 @@ func onFriendStatusMessageChanges(t *gotox.Tox, friendnumber uint32, status stri
 }
 
 func onFriendStatusChanges(t *gotox.Tox, friendnumber uint32, userstatus gotox.ToxUserStatus) {
-	fmt.Printf("Friend status changed: %d -> %s\n", friendnumber, getUserStatusAsString(userstatus))
-
 	type jsonEvent struct {
 		Type   string `json:"type"`
 		Friend uint32 `json:"friend"`
@@ -128,14 +111,31 @@ func onFriendStatusChanges(t *gotox.Tox, friendnumber uint32, userstatus gotox.T
 	broadcastToClients(string(e))
 }
 
-func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind uint32, filesize uint64, filename string) {
-	// Accept any file send request
-	t.FileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
-	// Init *File handle
-	f, _ := os.Create("example_" + filename)
-	// Append f to the map[uint8]*os.File
-	transfers[filenumber] = f
-	transfersFilesizes[filenumber] = filesize
+func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind gotox.ToxFileKind, filesize uint64, filename string) {
+	if kind == gotox.TOX_FILE_KIND_AVATAR {
+		// Init *File handle
+		publicKey, _ := tox.FriendGetPublickey(friendnumber)
+		f, _ := os.Create("../html/avatars/" + hex.EncodeToString(publicKey) + ".png")
+
+		// Append f to the map[uint8]*os.File
+		transfers[filenumber] = f
+		transfersFilesizes[filenumber] = filesize
+		t.FileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
+
+	} else if kind == gotox.TOX_FILE_KIND_DATA {
+		// Init *File handle
+		f, _ := os.Create("../html/download" + filename)
+
+		// Append f to the map[uint8]*os.File
+		transfers[filenumber] = f
+		transfersFilesizes[filenumber] = filesize
+
+		// TODO do not accept any file send request without asking the user
+		t.FileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
+
+	} else {
+		log.Print("onFileRecv: unknown TOX_FILE_KIND: ", kind)
+	}
 }
 
 func onFileRecvControl(t *gotox.Tox, friendnumber uint32, filenumber uint32, fileControl gotox.ToxFileControl) {
@@ -154,7 +154,10 @@ func onFileRecvChunk(t *gotox.Tox, friendnumber uint32, filenumber uint32, posit
 		f.Sync()
 		f.Close()
 		delete(transfers, filenumber)
-		fmt.Println("Written file", filenumber)
-		t.FriendSendMessage(friendnumber, gotox.TOX_MESSAGE_TYPE_NORMAL, "Thanks!")
+		log.Println("File written: ", filenumber)
+		t.FriendSendMessage(friendnumber, gotox.TOX_MESSAGE_TYPE_ACTION, "File transfer completed.")
+
+		// update friendlist (avatar updates)
+		broadcastToClients(createSimpleJSONEvent("avatar_update"))
 	}
 }

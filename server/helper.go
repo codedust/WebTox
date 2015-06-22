@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"strings"
 )
 
 func rejectWithErrorJSON(w http.ResponseWriter, code string, message string) {
@@ -32,6 +31,18 @@ func rejectWithDefaultErrorJSON(w http.ResponseWriter) {
 	e := Err{Code: "unknown", Message: "An unknown error occoured."}
 	jsonErr, _ := json.Marshal(e)
 	http.Error(w, string(jsonErr), 422)
+}
+
+func createSimpleJSONEvent(name string) string {
+	type jsonEvent struct {
+		Type string `json:"type"`
+	}
+
+	e, _ := json.Marshal(jsonEvent{
+		Type: name,
+	})
+
+	return string(e)
 }
 
 func getUserStatusAsString(status gotox.ToxUserStatus) string {
@@ -70,7 +81,7 @@ func getFriendListJSON() (string, error) {
 
 	type friend struct {
 		Number          uint32    `json:"number"`
-		ID              string    `json:"id"`
+		PublicKey       string    `json:"publicKey"`
 		Chat            []Message `json:"chat"`
 		LastMessageRead int64     `json:"last_msg_read"`
 		Name            string    `json:"name"`
@@ -107,7 +118,7 @@ func getFriendListJSON() (string, error) {
 
 		newfriend := friend{
 			Number:          friend_num,
-			ID:              strings.ToUpper(hex.EncodeToString(publicKey)),
+			PublicKey:       hex.EncodeToString(publicKey),
 			Chat:            messages,
 			LastMessageRead: dbLastMessageRead,
 			Name:            name,
