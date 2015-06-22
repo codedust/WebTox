@@ -124,7 +124,7 @@ func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind gotox
 
 	} else if kind == gotox.TOX_FILE_KIND_DATA {
 		// Init *File handle
-		f, _ := os.Create("../html/download" + filename)
+		f, _ := os.Create("../html/download/" + filename)
 
 		// Append f to the map[uint8]*os.File
 		transfers[filenumber] = f
