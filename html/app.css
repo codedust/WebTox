@@ -231,9 +231,11 @@ body {
   z-index: 1; }
 
 #contact-list .active.contact .contact-name {
+  display: inline-block;
   color: #1c1c1c; }
 
 #contact-list .active.contact .contact-status-msg {
+  display: inline-block;
   color: #414141; }
 
 
