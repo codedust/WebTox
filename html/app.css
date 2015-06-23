@@ -222,7 +222,11 @@ body {
   float: left;
   margin-right: 10px; }
 
+#contact-list .contact-name {
+  min-height: 20px; }
+
 #contact-list .contact-status-msg {
+  min-height: 20px;
   color: #d1d1d1; }
 
 #contact-list .active.contact {
@@ -231,11 +235,9 @@ body {
   z-index: 1; }
 
 #contact-list .active.contact .contact-name {
-  display: inline-block;
   color: #1c1c1c; }
 
 #contact-list .active.contact .contact-status-msg {
-  display: inline-block;
   color: #414141; }
 
 
