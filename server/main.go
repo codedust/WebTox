@@ -168,8 +168,6 @@ func main() {
 }
 
 func serveGUI() {
-	storeDefaultHTTPAuth()
-
 	mux := http.NewServeMux()
 	mux.Handle("/events", handleWS)
 	mux.Handle("/api/", handleAPI)
