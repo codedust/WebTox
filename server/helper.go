@@ -187,15 +187,22 @@ func fileExists(path string) (bool, error) {
 }
 
 func storeDefaultHTTPAuth() (string, string, string) {
-	log.Println("Warning: Default username/password are used.")
 
 	salt, err := httpserve.RandomString(32)
 	if err != nil {
 		panic("could not generate salt")
 	}
 
+	plainPass, err := httpserve.RandomString(32)
+	if err != nil {
+		panic("could not generate salt")
+	}
+
 	user := CFG_DEFAULT_AUTH_USER
-	pass := httpserve.Sha512Sum(CFG_DEFAULT_AUTH_PASS + salt)
+	pass := httpserve.Sha512Sum(plainPass + salt)
+
+	log.Println("Info: Username reset to: ", user)
+	log.Println("Info: Password reset to: ", plainPass)
 
 	storage.StoreKeyValue("settings_auth_user", user)
 	storage.StoreKeyValue("settings_auth_pass", pass)

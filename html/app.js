@@ -252,6 +252,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       password: $('#inputAuthPass').val()
     }).success(function(){
       $('#inputAuthPass').parent().next().hide();
+      $('#inputAuthPass').val("");
     });
   });
 
