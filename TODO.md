@@ -10,9 +10,10 @@ TODO
 - links in chat messages
 - file transfer
 - settings: notifications
+- encrypt tox_save with password
 - dont show notifications when browser is focused
 - add sounds
-- group chats (waiting for gotox update)
+- group chats (waiting for toxcore/gotox update)
 - add support for toxme.se
 - localization (www.transifex.com?)
 - emoticons

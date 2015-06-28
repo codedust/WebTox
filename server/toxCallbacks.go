@@ -4,8 +4,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
 	"github.com/codedust/go-tox"
+	"log"
 	"os"
 	"time"
 )

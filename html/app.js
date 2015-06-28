@@ -27,20 +27,6 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     alert("This feature is not implemented yet. :( Sorry.");
   };
 
-  $('#profile-card-back-button').click(function(){
-    $('#profile-card, #contact-list-wrapper, #button-panel').removeClass('translate75left');
-    $('#mainview').removeClass('translate100left');
-    $('#profile-card-back-button').hide();
-  });
-
-  $('#contact-list-wrapper').click(function(){
-    if($(window).width() < 768){
-      $('#profile-card, #contact-list-wrapper, #button-panel').addClass('translate75left');
-      $('#mainview').addClass('translate100left');
-      $('#profile-card-back-button').show();
-    }
-  });
-
   // fullscreen
   $scope.goFullscreen = function(){
     var elem = document.querySelector("body");
@@ -101,6 +87,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     friend_id: "",
     message: "",
   };
+  $scope.settings = {};
   $scope.curDate = Date.now(); // current unix timestap used to work around caching
 
   $scope.getContactIndexByNum = function(num){
@@ -152,10 +139,13 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     }
   };
 
+  // == Settings ==
   $scope.showSettings = function(){
     $scope.active_mainview = $scope.mainview.SETTINGS;
   };
 
+
+  // == Messages ==
   $scope.sendMessage = function(){
     if($scope.messagetosend.length === 0)
       return;
@@ -189,6 +179,8 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     });
   };
 
+
+  // == Friends ==
   $scope.sendFriendRequest = function(friend_id, message){
     $http.post('api/post/friend_request', {
       friend_id: friend_id,
@@ -218,14 +210,61 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     });
   };
 
-  // == add event handlers ==
+  // == Event handlers ==
+  $('#profile-card-back-button').click(function(){
+    $('#profile-card, #contact-list-wrapper, #button-panel').removeClass('translate75left');
+    $('#mainview').removeClass('translate100left');
+    $('#profile-card-back-button').hide();
+  });
+
+  $('#contact-list-wrapper').click(function(){
+    if($(window).width() < 768){
+      $('#profile-card, #contact-list-wrapper, #button-panel').addClass('translate75left');
+      $('#mainview').addClass('translate100left');
+      $('#profile-card-back-button').show();
+    }
+  });
+
   $("#mainview-chat-footer-textarea-wrapper textarea").keyup(function(event){
     if(event.which == 13 && event.shiftKey !== true){
       $scope.sendMessage();
     }
   });
 
+  $('#inputAuthUser').change(function(){
+    $(this).parent().next().show();
+  }).keyup(function(){
+    $(this).parent().next().show();
+  }).parent().next().click(function(){
+    $http.post('api/post/settings_auth_user', {
+      username: $('#inputAuthUser').val()
+    }).success(function(){
+      $('#inputAuthUser').parent().next().hide();
+    });
+  });
+
+  $('#inputAuthPass').change(function(){
+    $(this).parent().next().show();
+  }).keyup(function(){
+    $(this).parent().next().show();
+  }).parent().next().click(function(){
+    $http.post('api/post/settings_auth_pass', {
+      password: $('#inputAuthPass').val()
+    }).success(function(){
+      $('#inputAuthPass').parent().next().hide();
+    });
+  });
+
+
+
   // == get initial data from server ==
+  $scope.fetchSettings = function() {
+    $http.get('api/get/settings').success(function(data){
+      $scope.settings = data;
+    });
+  };
+  $scope.fetchSettings();
+
   $scope.fetchProfile = function() {
     $http.get('api/get/profile').success(function(data){
       $scope.profile = data;

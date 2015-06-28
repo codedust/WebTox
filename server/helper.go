@@ -4,8 +4,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"github.com/codedust/go-httpserve"
 	"github.com/codedust/go-tox"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"runtime"
@@ -169,4 +171,35 @@ func loadData(filepath string) ([]byte, error) {
 	}
 
 	return data, err
+}
+
+// fileExists returns true if the given file or directory exists, otherwise false
+// path		the given file or directory
+func fileExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
+func storeDefaultHTTPAuth() (string, string, string) {
+	log.Println("Warning: Default username/password are used.")
+
+	salt, err := httpserve.RandomString(32)
+	if err != nil {
+		panic("could not generate salt")
+	}
+
+	user := CFG_DEFAULT_AUTH_USER
+	pass := httpserve.Sha512Sum(CFG_DEFAULT_AUTH_PASS + salt)
+
+	storage.StoreKeyValue("settings_auth_user", user)
+	storage.StoreKeyValue("settings_auth_pass", pass)
+	storage.StoreKeyValue("settings_auth_salt", salt)
+
+	return user, pass, salt
 }

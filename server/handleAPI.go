@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/codedust/go-httpserve"
 	"github.com/codedust/go-tox"
 	"log"
 	"net/http"
@@ -60,6 +61,19 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			pJSON, _ := json.Marshal(p)
 			fmt.Fprintf(w, string(pJSON))
+
+		case "/get/settings":
+			type settings struct {
+				AuthUser string `json:"auth_user"`
+			}
+
+			username, _ := storage.GetKeyValue("settings_auth_user")
+			s := settings{
+				AuthUser: username,
+			}
+
+			sJSON, _ := json.Marshal(s)
+			fmt.Fprintf(w, string(sJSON))
 
 		default:
 			// unknown GET request
@@ -237,6 +251,50 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				rejectWithDefaultErrorJSON(w)
 				return
 			}
+
+		case "/post/settings_auth_user":
+			type user struct {
+				Username string `json:"username"`
+			}
+			var incomingData user
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+			err = storage.StoreKeyValue("settings_auth_user", incomingData.Username)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+			}
+
+			httpserve.ChangeAuthOptionsUser(authOptions, incomingData.Username)
+
+		case "/post/settings_auth_pass":
+			type user struct {
+				Password string `json:"password"`
+			}
+			var incomingData user
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			salt, err := httpserve.RandomString(32)
+			if err != nil {
+				panic("could not generate salt")
+			}
+
+			pass := httpserve.Sha512Sum(incomingData.Password + salt)
+
+			err = storage.StoreKeyValue("settings_auth_pass", pass)
+			err2 := storage.StoreKeyValue("settings_auth_salt", salt)
+
+			if err != nil || err2 != nil {
+				rejectWithDefaultErrorJSON(w)
+			}
+
+			httpserve.ChangeAuthOptionsPass(authOptions, pass, salt)
 
 		default:
 			// unknown POST request

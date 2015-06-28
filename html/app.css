@@ -37,10 +37,12 @@
   font-style: normal; }
 
 body {
-  background: red; /* debug */
   width: 100%;
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+.initiallyhidden {
+  display: none; }
 
 .text-monospace {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
@@ -48,6 +50,9 @@ body {
 .avatar {
   width: 40px; height: 40px;
   background: #414141; }
+
+.well-toxid {
+  overflow-x: auto; }
 
 .btn-toxgreen {
   color:#fff;

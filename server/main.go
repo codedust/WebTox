@@ -42,6 +42,9 @@ var tox *gotox.Tox
 // the global connection to the database
 var storage *persistence.StorageConn
 
+// the global options for HTTP authentication
+var authOptions *httpserve.AuthOptions
+
 // Map of active file transfers
 var transfers = make(map[uint32]*os.File)
 var transfersFilesizes = make(map[uint32]uint64)
@@ -49,18 +52,17 @@ var transfersFilesizes = make(map[uint32]uint64)
 func main() {
 	var newToxInstance bool = false
 	var options *gotox.Options
+	var databasePath string = filepath.Join(CFG_DATA_DIR, "userdata.db")
 
 	var err error
-	storage, err = persistence.Open("../data/userdata.db")
+	storage, err = persistence.Open(databasePath)
 	if err != nil {
 		log.Panic("DB initialisation failed.")
 	}
 	defer storage.Close()
 
-	//TODO change file location
 	var toxSaveFilepath string
-	//flag.StringVar(&toxSaveFilepath, "p", filepath.Join(getUserprofilePath(), "webtox_save"), "path to save file")
-	flag.StringVar(&toxSaveFilepath, "p", filepath.Join("../data/webtox_save"), "path to save file")
+	flag.StringVar(&toxSaveFilepath, "p", filepath.Join(CFG_DATA_DIR, "webtox_save"), "path to save file")
 	flag.Parse()
 	fmt.Println("ToxData will be saved to", toxSaveFilepath)
 
@@ -166,21 +168,42 @@ func main() {
 }
 
 func serveGUI() {
+	storeDefaultHTTPAuth()
+
 	mux := http.NewServeMux()
 	mux.Handle("/events", handleWS)
 	mux.Handle("/api/", handleAPI)
-	mux.Handle("/", http.FileServer(http.Dir("../html")))
+	mux.Handle("/", http.FileServer(http.Dir(CFG_HTML_DIR)))
 
 	// add authentication
-	salt, err := httpserve.RandomString(32)
-	if err != nil {
-		panic("could not generate salt")
+	var err error
+	var user, pass, salt string
+
+	user, err = storage.GetKeyValue("settings_auth_user")
+	if err == persistence.KeyNotFound {
+		user, pass, salt = storeDefaultHTTPAuth()
+	} else if err != nil {
+		panic("GUI authentication username could not be determined.")
 	}
 
-	// TODO store password in db and allow the user to change it
-	handleAuth := httpserve.BasicAuthHandler(mux, "user", httpserve.Sha512Sum("pass"+salt), salt)
+	pass, err = storage.GetKeyValue("settings_auth_pass")
+	if err == persistence.KeyNotFound {
+		user, pass, salt = storeDefaultHTTPAuth()
+	} else if err != nil {
+		panic("GUI authentication password could not be determined.")
+	}
+
+	salt, err = storage.GetKeyValue("settings_auth_salt")
+	if err == persistence.KeyNotFound {
+		user, pass, salt = storeDefaultHTTPAuth()
+	} else if err != nil {
+		panic("GUI authentication salt could not be determined.")
+	}
+
+	authOptions = httpserve.NewAuthOptions(user, pass, salt)
+	handleAuth := httpserve.BasicAuthHandler(mux, authOptions)
+	httpserve.CreateCertificateIfNotExist(CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", "localhost", 3072)
 
 	// TODO support 0.0.0.0 and different ports
-	httpserve.CreateCertificateIfNotExist(CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", "localhost", 3072)
-	httpserve.ListenAndUpgradeTLS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", handleAuth)
+	err = httpserve.ListenAndUpgradeTLS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", handleAuth)
 }

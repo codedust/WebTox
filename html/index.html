@@ -143,14 +143,51 @@
       <h1>Settings</h1>
       <hr>
       <h4>Your Tox ID</h4>
-      <div class="well well-sm text-monospace text-center">{{profile.tox_id}}</div>
       <p>This is your Tox ID that you can give out to your friends.</p>
+      <div class="well well-sm well-toxid text-monospace text-center">{{profile.tox_id}}</div>
       <hr>
-      <p>// TODO</p>
-      <input type="checkbox" id="check-notification"> <label for="check-notification">Show notifications</label>
-      <input type="text" value="127.0.0.1" placeholder="IP address">
-      <p>Use 0.0.0.0 for external access</p>
-      <input type="number" min="0" max="65535" value="" placeholder="Server port">
+      <h4>GUI Authentication Username/Password</h4>
+      <div class="form-horizontal">
+        <div class="form-group">
+          <label for="inputAuthUser" class="col-sm-3 control-label">GUI Authentication User</label>
+          <div class="col-sm-3"><input type="text" id="inputAuthUser" class="form-control input-sm" ng-model="settings.auth_user" value="" placeholder="User"></div>
+          <button class="btn btn-sm btn-default initiallyhidden">Save</button>
+        </div>
+        <div class="form-group">
+          <label for="inputAuthPass" class="col-sm-3 control-label">GUI Authentication Password</label>
+          <div class="col-sm-3"><input type="text" id="inputAuthPass" class="form-control input-sm" ng-model="settings.auth_password" value="" placeholder="Password"></div>
+          <button class="btn btn-sm btn-default initiallyhidden">Save</button>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-3">
+
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <h4>Notifications</h4>
+      <div class="form-horizontal">
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-3">
+            <div class="checkbox">
+              <label><input type="checkbox" id="check-notification"> Show notifications</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <h4>Server</h4>
+      <div class="form-horizontal">
+        <div class="form-group">
+          <label for="inputAuthUser" class="col-sm-3 control-label">GUI Listen Address</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control input-sm" placeholder="127.0.0.1:8080">
+          <p class="help-block">Use 0.0.0.0 for external access</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- END OF Main View -->
@@ -163,7 +200,7 @@
           <h4 class="modal-title" id="modal-toxid-title">Your Tox ID</h4>
         </div>
         <div class="modal-body">
-          <div class="well well-sm text-monospace text-center">{{profile.tox_id}}</div>
+          <div class="well well-sm well-toxid text-monospace text-center">{{profile.tox_id}}</div>
           <p>This is your Tox ID that you can give out to your friends.</p>
         </div>
         <div class="modal-footer">
@@ -232,7 +269,8 @@
           <h4 class="modal-title" id="modal-about-title">About</h4>
         </div>
         <div class="modal-body">
-          <h1 class="text-center"><img alt="WebTox" title="WebTox" src="img/logo-with-text-512.png" style="max-width: 100%;"><br><small>0.0.1</small></h1>
+          <h1 class="text-center"><img alt="WebTox" title="WebTox" src="img/logo-with-text-512.png" style="max-width: 100%;"></h1>
+          <h1 class="text-center"><small>0.0.1</small></h1>
           <hr/>
           <p translate>Copyright &copy; 2014 WebTox authors and contributors</p>
           <p translate>WebTox includes the following software or portions thereof:</p>

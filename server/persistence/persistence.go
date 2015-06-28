@@ -2,10 +2,15 @@ package persistence
 
 import (
 	"database/sql"
+	"errors"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"sync"
 	"time"
+)
+
+var (
+	KeyNotFound = errors.New("Key does not exist")
 )
 
 type StorageConn struct {
@@ -36,7 +41,7 @@ func Open(filename string) (*StorageConn, error) {
     friend INTEGER,
     isIncoming INTEGER,
     isAction INTEGER,
-		time INTEGER,
+    time INTEGER,
     message TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS friends (
@@ -45,8 +50,12 @@ func Open(filename string) (*StorageConn, error) {
   );
   CREATE TABLE IF NOT EXISTS friendLastMessageRead (
     friend INTEGER PRIMARY KEY,
-		time INTEGER
-  )`
+    time INTEGER
+  );
+  CREATE TABLE IF NOT EXISTS keyValueStorage (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );`
 
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
@@ -61,6 +70,42 @@ func Open(filename string) (*StorageConn, error) {
 // Close safely closes the connection to the database
 func (s *StorageConn) Close() {
 	s.db.Close()
+}
+
+// StoreKeyValue stores a key-value pair of strings
+// key		the key (case sensitive)
+// value	the value
+func (s *StorageConn) StoreKeyValue(key string, value string) error {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	_, err := s.db.Exec(`INSERT OR REPLACE INTO keyValueStorage(key, value) VALUES(?, ?)`, key, value)
+	if err != nil {
+		log.Print("[persistence StoreKeyValue] INSERT statement failed")
+		return err
+	}
+
+	return nil
+}
+
+// GetKeyValue returns the value corresponding to the given key or an empty
+// string if the value could not be determined
+// key		the key (case sensitive)
+func (s *StorageConn) GetKeyValue(key string) (string, error) {
+	rows, err := s.db.Query("SELECT value FROM keyValueStorage WHERE key = ?", key)
+	if err != nil {
+		log.Print("[persistence GetKeyValue] SELECT statement failed")
+		return "", err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		var value string
+		rows.Scan(&value)
+		return value, nil
+	}
+
+	return "", KeyNotFound
 }
 
 // StoreMessage stores a message
