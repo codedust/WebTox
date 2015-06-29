@@ -155,7 +155,6 @@ func onFileRecvChunk(t *gotox.Tox, friendnumber uint32, filenumber uint32, posit
 		f.Close()
 		delete(transfers, filenumber)
 		log.Println("File written: ", filenumber)
-		t.FriendSendMessage(friendnumber, gotox.TOX_MESSAGE_TYPE_ACTION, "File transfer completed.")
 
 		// update friendlist (avatar updates)
 		broadcastToClients(createSimpleJSONEvent("avatar_update"))
