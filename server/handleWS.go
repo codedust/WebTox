@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"golang.org/x/net/websocket"
+	"strconv"
+	"github.com/codedust/go-tox"
 )
 
 var activeConnections = make(map[*websocket.Conn]bool)
@@ -32,12 +34,28 @@ var handleWS = websocket.Handler(func(conn *websocket.Conn) {
 	fmt.Println("[handleWS] Client connected:", conn.Request().RemoteAddr)
 	fmt.Println("[handleWS] Number of clients connected:", len(activeConnections))
 
+	awayOnDisconnectString, _ := storage.GetKeyValue("settings_away_on_disconnect")
+	awayOnDisconnect, _ := strconv.ParseBool(awayOnDisconnectString)
+
+	if awayOnDisconnect {
+		tox.SelfSetStatus(gotox.TOX_USERSTATUS_NONE)
+	}
+
 	for {
 		if err = websocket.Message.Receive(conn, &clientMessage); err != nil {
 			// the connection is closed
 			fmt.Println("[handleWS] Read error. Removing client.", err.Error())
 			delete(activeConnections, conn)
 			fmt.Println("[handleWS] Number of clients still connected:", len(activeConnections))
+
+			if len(activeConnections) == 0 {
+				awayOnDisconnectString, _ := storage.GetKeyValue("settings_away_on_disconnect")
+				awayOnDisconnect, _ := strconv.ParseBool(awayOnDisconnectString)
+
+				if awayOnDisconnect {
+					tox.SelfSetStatus(gotox.TOX_USERSTATUS_AWAY)
+				}
+			}
 			return
 		}
 	}

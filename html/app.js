@@ -85,10 +85,10 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   };
   $scope.contacts = [];
   $scope.activecontactindex = -1;
-  $scope.messagetosend = "";
+  $scope.messagetosend = '';
   $scope.new_friend_request = {
-    friend_id: "",
-    message: "",
+    friend_id: '',
+    message: '',
   };
   $scope.settings = {};
   $scope.curDate = Date.now(); // current unix timestap used to work around caching
@@ -168,7 +168,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
 
     $scope.contacts[$scope.activecontactindex].chat.unshift({"isIncoming": false, "isAction": false, "message": $scope.messagetosend.replace(/\n/g, "<br>"), "time": Date.now()});
     $scope.contacts[$scope.activecontactindex].last_msg_read = Date.now();
-    $scope.messagetosend = "";
+    $scope.messagetosend = '';
     $scope.sendMessageRead($scope.contacts[$scope.activecontactindex].number);
 
     $("#mainview-chat-body").animate({"scrollTop": $("#mainview-chat-body").prop("scrollHeight")}, 1000);
@@ -235,27 +235,27 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   });
 
   $('#inputAuthUser').change(function(){
-    $(this).parent().next().show();
+    $(this).parent().next().find('button').show();
   }).keyup(function(){
-    $(this).parent().next().show();
-  }).parent().next().click(function(){
+    $(this).parent().find('button').show();
+  }).parent().next().find('button').click(function(){
     $http.post('api/post/settings_auth_user', {
       username: $('#inputAuthUser').val()
     }).success(function(){
-      $('#inputAuthUser').parent().next().hide();
+      $('#inputAuthUser').parent().next().find('button').hide();
     });
   });
 
   $('#inputAuthPass').change(function(){
-    $(this).parent().next().show();
+    $(this).parent().next().find('button').show();
   }).keyup(function(){
-    $(this).parent().next().show();
-  }).parent().next().click(function(){
+    $(this).parent().next().find('button').show();
+  }).parent().next().find('button').click(function(){
     $http.post('api/post/settings_auth_pass', {
       password: $('#inputAuthPass').val()
     }).success(function(){
-      $('#inputAuthPass').parent().next().hide();
-      $('#inputAuthPass').val("");
+      $('#inputAuthPass').parent().next().find('button').hide();
+      $('#inputAuthPass').val('');
     });
   });
 
@@ -263,6 +263,15 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     $http.post('api/post/keyValue', {
       key: 'settings_notifications_enabled',
       value: $('#checkbox-notifications').prop('checked').toString()
+    }).error(function(){
+      $scope.fetchSettings();
+    });
+  });
+
+  $('#checkbox-away-on-disconnect').change(function(){
+    $http.post('api/post/keyValue', {
+      key: 'settings_away_on_disconnect',
+      value: $('#checkbox-away-on-disconnect').prop('checked').toString()
     }).error(function(){
       $scope.fetchSettings();
     });

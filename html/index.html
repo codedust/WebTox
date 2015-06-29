@@ -36,14 +36,14 @@
     <div id="profile-card-status-dropdown" class="dropdown">
       <button href="#" class="dropdown-toggle" data-toggle="dropdown" id="profile-card-status-button">
         <img ng-show="profile.status == 'NONE'" src="img/toxui/dot_online.png" alt="Online">
-        <img ng-show="profile.status == 'AWAY'" src="img/toxui/dot_idle.png" alt="Idle">
+        <img ng-show="profile.status == 'AWAY'" src="img/toxui/dot_away.png" alt="Away">
         <img ng-show="profile.status == 'BUSY'" src="img/toxui/dot_busy.png" alt="Busy">
         <!--<img ng-show="profile.status == 'INVI'" src="img/toxui/dot_invisible.png" alt="Invisible">-->
       </button>
 
       <ul class="dropdown-menu dropdown-menu-right">
         <li><a href="#" ng-click="setUserStatus('NONE')"><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
-        <li><a href="#" ng-click="setUserStatus('AWAY')"><img src="img/toxui/dot_idle.png">&emsp;<span translate>Idle</span></a></li>
+        <li><a href="#" ng-click="setUserStatus('AWAY')"><img src="img/toxui/dot_away.png">&emsp;<span translate>Away</span></a></li>
         <li><a href="#" ng-click="setUserStatus('BUSY')"><img src="img/toxui/dot_busy.png">&emsp;<span translate>Busy</span></a></li>
         <!--<li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Invisible</span></a></li>-->
         <li class="divider"></li>
@@ -69,8 +69,8 @@
       <a href="#" class="contact" ng-class="{active: contacts[activecontactindex] == contact}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number)" ng-show="!onlyShowOnlineContacts || contact.online">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Online"  src="img/toxui/dot_online.png">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && contact.last_msg_read < contact.chat[0].time"                                alt="Online"  src="img/toxui/dot_online_notification.png">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Idle"    src="img/toxui/dot_idle.png">
-        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && contact.last_msg_read < contact.chat[0].time"                                alt="Idle"    src="img/toxui/dot_idle_notification.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Away"    src="img/toxui/dot_away.png">
+        <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && contact.last_msg_read < contact.chat[0].time"                                alt="Away"    src="img/toxui/dot_away_notification.png">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Busy"    src="img/toxui/dot_busy.png">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'BUSY' && contact.last_msg_read < contact.chat[0].time"                                alt="Busy"    src="img/toxui/dot_busy_notification.png">
         <img class="contact-status-icon" ng-show="!contact.online && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)"                            alt="Offline" src="img/toxui/dot_offline.png">
@@ -151,26 +151,26 @@
         <div class="form-group">
           <label for="inputAuthUser" class="col-sm-3 control-label">GUI Authentication User</label>
           <div class="col-sm-3"><input type="text" id="inputAuthUser" class="form-control input-sm" ng-model="settings.auth_user" value="" placeholder="User"></div>
-          <button class="btn btn-sm btn-default initiallyhidden">Save</button>
+          <div class="col-sm-1"><button class="btn btn-sm btn-default initiallyhidden">Save</button></div>
         </div>
         <div class="form-group">
           <label for="inputAuthPass" class="col-sm-3 control-label">GUI Authentication Password</label>
           <div class="col-sm-3"><input type="password" id="inputAuthPass" class="form-control input-sm" ng-model="settings.auth_password" value="" placeholder="Password"></div>
-          <button class="btn btn-sm btn-default initiallyhidden">Save</button>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-3 col-sm-3">
-
-          </div>
+          <div class="col-sm-1"><button class="btn btn-sm btn-default initiallyhidden">Save</button></div>
         </div>
       </div>
       <hr>
 
-      <h4>Notifications</h4>
+      <h4>General</h4>
       <div class="form-horizontal">
         <div class="form-group">
           <div class="col-sm-offset-3 col-sm-3">
             <div class="checkbox"><label><input type="checkbox" id="checkbox-notifications" ng-model="settings.notifications_enabled"> Show notifications</label></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-3">
+            <div class="checkbox"><label><input type="checkbox" id="checkbox-away-on-disconnect" ng-model="settings.away_on_disconnect"> Change status to <i>away</i> when the last webclient disconnects</label></div>
           </div>
         </div>
       </div>
