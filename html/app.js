@@ -42,6 +42,9 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   };
 
   $scope.showNotification = function(title, body, onclick) {
+    if (!$scope.settings.notifications_enabled)
+      return;
+
     if (!("Notification" in window)) {
       //TODO implement fallback
       alert("This browser does not support desktop notifications.");
@@ -59,9 +62,9 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
         if (permission === "granted") {
           var notification = new Notification(title, {
             body: body,
-            icon: '/img/favicon.png'
+            icon: '/img/favicon.png',
+            onclick: onclick
           });
-          notification.onclick = onclick;
         }
       });
     }
@@ -256,6 +259,15 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     });
   });
 
+  $('#checkbox-notifications').change(function(){
+    $http.post('api/post/keyValue', {
+      key: 'settings_notifications_enabled',
+      value: $('#checkbox-notifications').prop('checked').toString()
+    }).error(function(){
+      $scope.fetchSettings();
+    });
+  });
+
 
 
   // == get initial data from server ==
@@ -296,6 +308,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       $('#modal-connection-error').modal('hide');
       $scope.fetchProfile();
       $scope.fetchContactlist();
+      $scope.fetchSettings();
     };
     ws.onclose = function(){
       console.log("WebSocket connection closed!");
@@ -348,7 +361,6 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
         break;
 
       case 'friendlist_update':
-        console.log("friendlist_update");
         $scope.fetchContactlist();
         break;
 

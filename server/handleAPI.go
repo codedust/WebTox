@@ -8,6 +8,7 @@ import (
 	"github.com/codedust/go-tox"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -37,6 +38,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			friendlist, err := getFriendListJSON()
 			if err != nil {
 				rejectWithDefaultErrorJSON(w)
+				return
 			}
 			fmt.Fprintf(w, friendlist)
 
@@ -65,11 +67,20 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		case "/get/settings":
 			type settings struct {
 				AuthUser string `json:"auth_user"`
+				NotificationsEnabled bool `json:"notifications_enabled"`
+				BusyOnDisconnect bool `json:"busy_on_disconnect"`
 			}
 
 			username, _ := storage.GetKeyValue("settings_auth_user")
+			notificationsEnabledString, _ := storage.GetKeyValue("settings_notifications_enabled")
+			notificationsEnabled, _ := strconv.ParseBool(notificationsEnabledString)
+			busyOnDisconnectString, _ := storage.GetKeyValue("settings_busy_on_disconnect")
+			busyOnDisconnect, _ := strconv.ParseBool(busyOnDisconnectString)
+
 			s := settings{
 				AuthUser: username,
+				NotificationsEnabled: notificationsEnabled,
+				BusyOnDisconnect: busyOnDisconnect,
 			}
 
 			sJSON, _ := json.Marshal(s)
@@ -78,6 +89,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		default:
 			// unknown GET request
 			rejectWithDefaultErrorJSON(w)
+			return
 		}
 
 	// POST REQUESTS
@@ -265,6 +277,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			err = storage.StoreKeyValue("settings_auth_user", incomingData.Username)
 			if err != nil {
 				rejectWithDefaultErrorJSON(w)
+				return
 			}
 
 			httpserve.ChangeAuthOptionsUser(authOptions, incomingData.Username)
@@ -292,17 +305,49 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			if err != nil || err2 != nil {
 				rejectWithDefaultErrorJSON(w)
+				return
 			}
 
 			httpserve.ChangeAuthOptionsPass(authOptions, pass, salt)
 
+		case "/post/keyValue":
+			type keyValue struct {
+				Key string `json:"key"`
+				Value string `json:"value"`
+			}
+
+			var incomingData keyValue
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			allowedKeys := map[string]bool {
+				"settings_notifications_enabled": true,
+				"settings_busy_on_disconnect": true,
+			}
+
+			if !allowedKeys[incomingData.Key] {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			err = storage.StoreKeyValue(incomingData.Key, incomingData.Value)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
 		default:
 			// unknown POST request
 			rejectWithDefaultErrorJSON(w)
+			return
 		}
 
 	default:
 		// unknown API request
 		rejectWithDefaultErrorJSON(w)
+		return
 	}
 })
