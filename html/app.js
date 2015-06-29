@@ -237,7 +237,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
   $('#inputAuthUser').change(function(){
     $(this).parent().next().find('button').show();
   }).keyup(function(){
-    $(this).parent().find('button').show();
+    $(this).parent().next().find('button').show();
   }).parent().next().find('button').click(function(){
     $http.post('api/post/settings_auth_user', {
       username: $('#inputAuthUser').val()
@@ -367,6 +367,10 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
         i = $scope.getContactIndexByNum(data.friend);
         $scope.contacts[i].online = data.online;
         $scope.showNotification($scope.contacts[i].name+" is now "+(data.online?'online':'offline'));
+        break;
+
+      case 'profile_update':
+        $scope.fetchProfile();
         break;
 
       case 'friendlist_update':

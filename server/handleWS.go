@@ -39,6 +39,7 @@ var handleWS = websocket.Handler(func(conn *websocket.Conn) {
 
 	if awayOnDisconnect {
 		tox.SelfSetStatus(gotox.TOX_USERSTATUS_NONE)
+		broadcastToClients(createSimpleJSONEvent("profile_update"))
 	}
 
 	for {
