@@ -66,9 +66,9 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		case "/get/settings":
 			type settings struct {
-				AuthUser string `json:"auth_user"`
-				AwayOnDisconnect bool `json:"away_on_disconnect"`
-				NotificationsEnabled bool `json:"notifications_enabled"`
+				AuthUser             string `json:"auth_user"`
+				AwayOnDisconnect     bool   `json:"away_on_disconnect"`
+				NotificationsEnabled bool   `json:"notifications_enabled"`
 			}
 
 			username, _ := storage.GetKeyValue("settings_auth_user")
@@ -78,8 +78,8 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			awayOnDisconnect, _ := strconv.ParseBool(awayOnDisconnectString)
 
 			s := settings{
-				AuthUser: username,
-				AwayOnDisconnect: awayOnDisconnect,
+				AuthUser:             username,
+				AwayOnDisconnect:     awayOnDisconnect,
 				NotificationsEnabled: notificationsEnabled,
 			}
 
@@ -312,7 +312,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		case "/post/keyValue":
 			type keyValue struct {
-				Key string `json:"key"`
+				Key   string `json:"key"`
 				Value string `json:"value"`
 			}
 
@@ -323,9 +323,9 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			allowedKeys := map[string]bool {
+			allowedKeys := map[string]bool{
 				"settings_notifications_enabled": true,
-				"settings_away_on_disconnect": true,
+				"settings_away_on_disconnect":    true,
 			}
 
 			if !allowedKeys[incomingData.Key] {

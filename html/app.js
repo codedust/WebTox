@@ -277,7 +277,26 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
     });
   });
 
+  // == WebApp Installation ==
+  $scope.appInstallationStatus = 'unknown';
 
+  if (navigator.mozApps !== undefined) {
+    var checkInstalledReq = navigator.mozApps.checkInstalled(location.href+"/manifest.webapp");
+    checkInstalledReq.onsuccess = function() {
+      if (checkInstalledReq.result) {
+        $scope.$apply(function(){ $scope.appInstallationStatus = 'installed'; });
+      } else {
+        $scope.$apply(function(){ $scope.appInstallationStatus = 'notinstalled'; });
+      }
+    };
+  }
+
+  $scope.installWebApp = function() {
+    var installReq = navigator.mozApps.install(location.href+"/manifest.webapp");
+    installReq.onsuccess = function() {
+      $scope.$apply(function(){ $scope.appInstallationStatus = 'installed'; });
+    };
+  };
 
   // == get initial data from server ==
   $scope.fetchSettings = function() {
@@ -318,6 +337,7 @@ webtox.controller('webtoxCtrl', ['$scope', '$http', function($scope, $http) {
       $scope.fetchProfile();
       $scope.fetchContactlist();
       $scope.fetchSettings();
+      $scope.$apply();
     };
     ws.onclose = function(){
       console.log("WebSocket connection closed!");

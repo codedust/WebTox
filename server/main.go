@@ -168,12 +168,6 @@ func main() {
 }
 
 func serveGUI() {
-	mux := http.NewServeMux()
-	mux.Handle("/events", handleWS)
-	mux.Handle("/api/", handleAPI)
-	mux.Handle("/", http.FileServer(http.Dir(CFG_HTML_DIR)))
-
-	// add authentication
 	var err error
 	var user, pass, salt string
 
@@ -199,9 +193,16 @@ func serveGUI() {
 	}
 
 	authOptions = httpserve.NewAuthOptions(user, pass, salt)
-	handleAuth := httpserve.BasicAuthHandler(mux, authOptions)
-	httpserve.CreateCertificateIfNotExist(CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", "localhost", 3072)
+	mux := http.NewServeMux()
 
-	// TODO support 0.0.0.0 and different ports
-	err = httpserve.ListenAndUpgradeTLS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", handleAuth)
+	// paths that require authentication
+	mux.Handle("/events", httpserve.BasicAuthHandler(handleWS, authOptions))
+	mux.Handle("/api/", httpserve.BasicAuthHandler(handleAPI, authOptions))
+	mux.Handle("/", httpserve.BasicAuthHandler(http.FileServer(http.Dir(CFG_HTML_DIR)), authOptions))
+
+	// paths that *do not* require authentication
+	mux.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir(CFG_IMG_DIR))))
+
+	httpserve.CreateCertificateIfNotExist(CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", "localhost", 3072)
+	err = httpserve.ListenAndUpgradeTLS(":8080", CFG_DATA_DIR+CFG_CERT_PREFIX+"cert.pem", CFG_DATA_DIR+CFG_CERT_PREFIX+"key.pem", mux)
 }

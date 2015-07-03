@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/codedust/go-tox"
 	"golang.org/x/net/websocket"
 	"strconv"
-	"github.com/codedust/go-tox"
 )
 
 var activeConnections = make(map[*websocket.Conn]bool)

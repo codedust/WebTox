@@ -54,6 +54,15 @@ body {
 .well-toxid {
   overflow-x: auto; }
 
+.btn {
+  border-radius: 5px; }
+
+.inline-button {
+  margin: 10px 10px 10px 0;
+  padding: 5px 10px;
+  vertical-align: bottom;
+  font-weight: bold; }
+
 .btn-toxgreen {
   color:#fff;
   background-color:#6bc260;
@@ -63,13 +72,6 @@ body {
   color:#fff;
   background-color:#4eac42;
   border-color:#429238; }
-
-.btn-toxgreen:active,.btn-toxgreen.active,.open>.dropdown-toggle.btn-toxgreen{
-  background-image:none; }
-
-.btn-toxgreen.disabled,.btn-toxgreen[disabled],fieldset[disabled] .btn-toxgreen,.btn-toxgreen.disabled:hover,.btn-toxgreen[disabled]:hover,fieldset[disabled] .btn-toxgreen:hover,.btn-toxgreen.disabled:focus,.btn-toxgreen[disabled]:focus,fieldset[disabled] .btn-toxgreen:focus,.btn-toxgreen.disabled:active,.btn-toxgreen[disabled]:active,fieldset[disabled] .btn-toxgreen:active,.btn-toxgreen.disabled.active,.btn-toxgreen[disabled].active,fieldset[disabled] .btn-toxgreen.active{
-  background-color:#6bc260;
-  border-color:#5abb4d; }
 
 .btn-toxgreen .badge{
   color:#6bc260;
@@ -84,13 +86,6 @@ body {
   color:#fff;
   background-color:#ab3737;
   border-color:#902e2e; }
-
-.btn-toxred:active,.btn-toxred.active,.open>.dropdown-toggle.btn-toxred{
-  background-image:none; }
-
-.btn-toxred.disabled,.btn-toxred[disabled],fieldset[disabled] .btn-toxred,.btn-toxred.disabled:hover,.btn-toxred[disabled]:hover,fieldset[disabled] .btn-toxred:hover,.btn-toxred.disabled:focus,.btn-toxred[disabled]:focus,fieldset[disabled] .btn-toxred:focus,.btn-toxred.disabled:active,.btn-toxred[disabled]:active,fieldset[disabled] .btn-toxred:active,.btn-toxred.disabled.active,.btn-toxred[disabled].active,fieldset[disabled] .btn-toxred.active{
-  background-color:#c84e4e;
-  border-color:#bf3d3d; }
 
 .btn-toxred .badge{
   color:#6bc260;
@@ -156,8 +151,7 @@ body {
   padding: 9px 10px;
   line-height: 20px;
   background: #414141;
-  border: none;
-  border-radius: 5px; }
+  border: none; }
 
 #profile-card-username {
   font-weight: bold; }
@@ -197,12 +191,6 @@ body {
   border-radius: 5px;
   color: white;
   line-height: 10px;
-  font-weight: bold; }
-
-#friend-request-button {
-  margin: 10px 10px 10px 0px; padding: 5px 10px;
-  border-radius: 5px;
-  vertical-align: bottom;
   font-weight: bold; }
 
 #contact-list .contact {
@@ -336,30 +324,30 @@ body {
 #mainview-chat-footer {
   position: absolute;
   right: 0; bottom: 0; left: 0;
-  height: 70px;
-  padding: 10px; }
+  height: 80px; }
 
 #mainview-chat-footer-textarea-wrapper {
   position: absolute;
-  right: 120px; bottom: 0; left: 0; }
+  right: 110px; bottom: 0; left: 0;
+  height: 60px;
+  margin: 10px 0 10px 10px; }
 
 #mainview-chat-footer textarea {
-  margin: 10px;
   width: 100%; height: 60px;
   padding: 5px;
   border: 1px solid #d1d1d1;
+  border-right: none;
   resize: none; }
 
 #mainview-chat-footer-buttons-wrapper {
   position: absolute;
-  right: 0; bottom: 1px;
-  margin: 10px;
-  height: 60px;
-  width: 100px; }
+  right: 0; bottom: 0;
+  width: 100px; height: 60px;
+  margin: 10px 10px 10px 0; }
 
 #mainview-chat-footer-buttons-wrapper button {
   border: none;
-  background: #6bc260; }
+  padding: 0; }
 
 #mainview-chat-footer-button-emoticon {
   border-radius: 0 5px 0 0;
@@ -373,7 +361,6 @@ body {
   display:block; }
 
 #mainview-chat-footer-button-send {
-  border-radius: 5px;
   width: 60px; height: 60px;
   float: right; }
 

@@ -1,9 +1,10 @@
 {
   "name": "WebTox",
   "description": "A web based graphical user interface for Tox",
-  "launch_path": "/index.html",
+  "launch_path": "/",
   "icons": {
-    "64": "/img/favicon.png"
+    "128": "/img/webtox128.png",
+    "512": "/img/webtox512.png"
   },
   "developer": {
     "name": "codedust",
@@ -11,7 +12,7 @@
   },
   "permissions": {
     "desktop-notification": {
-      "description": "WebTox would like to show notifications for new incoming messages."
+      "description": "Required to show notifications for new incoming messages"
     }
   }
 }
