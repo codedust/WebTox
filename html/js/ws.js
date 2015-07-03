@@ -4,7 +4,7 @@
   app.service('WS', ['$rootScope', function($rootScope) {
     var handlers = {};
 
-    this.newConnection = function(onopen, onclose) {
+    var newConnection = function(onopen, onclose) {
       if (!("WebSocket" in window)) {
         // TODO fallback to ajax
         alert("Sorry, your browser does not support WebSockets.");
@@ -43,6 +43,8 @@
         }
       };
     };
+
+    this.newConnection = newConnection;
 
     this.registerHandler = function(event, handler) {
       if (typeof event !== "string") {

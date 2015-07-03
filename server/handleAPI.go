@@ -143,6 +143,9 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			publicKey, _ := tox.FriendGetPublickey(incomingData.Friend)
 			storage.SetLastMessageRead(hex.EncodeToString(publicKey))
 
+			// broadcast status to all connected clients
+			broadcastToClients(createSimpleJSONEvent("friendlist_update"))
+
 		case "/post/username":
 			type profile struct {
 				Username string `json:"username"`
