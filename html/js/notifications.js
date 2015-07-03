@@ -2,9 +2,10 @@
   var app = angular.module('notifications', []);
 
   app.service('Notifications', ['$rootScope', function($rootScope) {
-    var notify = function(title, body, callback) {
+    var notify = function(title, body, tag, callback) {
       var notification = new Notification(title, {
         body: body,
+        tag: tag,
         icon: '/img/favicon.png'
       }).onclick = function() {
         if (typeof(callback) === 'function')
@@ -12,7 +13,7 @@
       };
     };
 
-    this.show = function(title, body, callback) {
+    this.show = function(title, body, tag, callback) {
       if (title === undefined || title === '') {
         console.log('[Notifications] Title has to be set.');
         return;
@@ -28,7 +29,7 @@
           $rootScope.$apply(callback());
 
       } else if (Notification.permission === "granted") {
-        notify(title, body, callback);
+        notify(title, body, tag, callback);
 
       } else if (Notification.permission !== 'denied') {
         Notification.requestPermission(function(permission) {
@@ -36,7 +37,7 @@
             Notification.permission = permission;
           }
           if (permission === "granted") {
-            notify(title, body, callback);
+            notify(title, body, tag, callback);
           }
         });
       }

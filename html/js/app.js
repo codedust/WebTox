@@ -279,7 +279,7 @@
           "time": data.time
         });
         if ($scope.settings.notifications_enabled) {
-          Notifications.show($scope.contacts[i].name, data.message, function() {
+          Notifications.show($scope.contacts[i].name, data.message, "friend_message"+$scope.contacts[i].number, function() {
             $scope.showChat(data.friend);
           });
         }
@@ -312,7 +312,7 @@
       var i = getContactIndexByNum(data.friend);
       $scope.contacts[i].online = data.online;
       if ($scope.settings.notifications_enabled) {
-        Notifications.show($scope.contacts[i].name + " is now " + (data.online ? 'online' : 'offline'));
+        Notifications.show($scope.contacts[i].name, + "is now " + (data.online ? 'online' : 'offline'), "connection_status"+$scope.contacts[i].number);
       }
     });
 
