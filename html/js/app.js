@@ -312,7 +312,7 @@
       var i = getContactIndexByNum(data.friend);
       $scope.contacts[i].online = data.online;
       if ($scope.settings.notifications_enabled) {
-        Notifications.show($scope.contacts[i].name, + "is now " + (data.online ? 'online' : 'offline'), "connection_status"+$scope.contacts[i].number);
+        Notifications.show($scope.contacts[i].name, "is now " + (data.online ? 'online' : 'offline'), "connection_status"+$scope.contacts[i].number);
       }
     });
 
