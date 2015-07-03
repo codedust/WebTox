@@ -219,30 +219,8 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			friendID, err := tox.FriendAdd(friendAddressBytes, incomingData.Message)
 			if err != nil {
-				switch err {
-				case gotox.ErrFriendAddNoMessage:
-					rejectWithErrorJSON(w, "no_message", "An invitation message is required.")
-					return
-				case gotox.ErrFriendAddTooLong:
-					rejectWithErrorJSON(w, "invalid_message", "The message you entered is too long.")
-					return
-				case gotox.ErrFriendAddOwnKey:
-					fallthrough
-				case gotox.ErrFriendAddBadChecksum:
-					fallthrough
-				case gotox.ErrFriendAddSetNewNospam:
-					rejectWithErrorJSON(w, "invalid_toxid", "The Tox ID you entered is invalid.")
-					return
-				case gotox.ErrFriendAddAlreadySent:
-					rejectWithErrorJSON(w, "already_send", "A friend request to this person has already send.")
-					return
-				case gotox.ErrFriendAddUnkown:
-					fallthrough
-				case gotox.ErrFriendAddNoMem:
-				default:
-					rejectWithDefaultErrorJSON(w)
-					return
-				}
+				rejectWithFriendErrorJSON(w, err)
+				return
 			}
 			fmt.Fprintf(w, string(friendID))
 
