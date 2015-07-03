@@ -2,6 +2,8 @@ TODO
 ----
 
 - CSRF prevention
+- option to only allow request from localhost
+- option to change the HTTP port
 - typing notifications (mit padding-bottom)
 - fake offline messages
 - fake online status
@@ -21,5 +23,7 @@ TODO
 - auto-updates / update-notification
 - Mobile UI
 - power consumption on mobile devices
-- package as a WebApp
 - context menu (right click to contacts to remove etc)
+- Etherpad-like persistent notes
+- add missing back buttons (settings, welcome) + dont swipe to much (click on friendlist)
+- display date in addition to time for chat messages

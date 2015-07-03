@@ -123,6 +123,7 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			publicKey, _ := tox.FriendGetPublickey(incomingData.Friend)
 			storage.StoreMessage(hex.EncodeToString(publicKey), false, false, incomingData.Message)
+			storage.SetLastMessageRead(hex.EncodeToString(publicKey))
 
 			// broadcast message to all connected clients
 			broadcastToClients(createSimpleJSONEvent("friendlist_update"))

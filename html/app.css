@@ -19,401 +19,425 @@
 @font-face {
   font-family: 'Roboto';
   src: url('font/Roboto-Regular-webfont.eot');
-  src: url('font/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-       url('font/Roboto-Regular-webfont.woff') format('woff'),
-       url('font/Roboto-Regular-webfont.ttf') format('truetype'),
-       url('font/Roboto-Regular-webfont.svg#robotoregular') format('svg');
+  src: url('font/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'), url('font/Roboto-Regular-webfont.woff') format('woff'), url('font/Roboto-Regular-webfont.ttf') format('truetype'), url('font/Roboto-Regular-webfont.svg#robotoregular') format('svg');
   font-weight: normal;
-  font-style: normal; }
-
+  font-style: normal;
+}
 @font-face {
   font-family: 'Roboto';
   src: url('font/Roboto-Bold-webfont.eot');
-  src: url('font/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'),
-       url('font/Roboto-Bold-webfont.woff') format('woff'),
-       url('font/Roboto-Bold-webfont.ttf') format('truetype'),
-       url('font/Roboto-Bold-webfont.svg#robotobold') format('svg');
+  src: url('font/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'), url('font/Roboto-Bold-webfont.woff') format('woff'), url('font/Roboto-Bold-webfont.ttf') format('truetype'), url('font/Roboto-Bold-webfont.svg#robotobold') format('svg');
   font-weight: bold;
-  font-style: normal; }
-
+  font-style: normal;
+}
 body {
   width: 100%;
   overflow-x: hidden;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif; }
-
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 .initiallyhidden {
-  display: none; }
-
+  display: none;
+}
 .text-monospace {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
-
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
 .avatar {
-  width: 40px; height: 40px;
-  background: #414141; }
-
+  width: 40px;
+  height: 40px;
+  background: #414141;
+}
 .well-toxid {
-  overflow-x: auto; }
-
+  overflow-x: auto;
+}
 .btn {
-  border-radius: 5px; }
-
+  border-radius: 5px;
+}
 .inline-button {
   margin: 10px 10px 10px 0;
   padding: 5px 10px;
   vertical-align: bottom;
-  font-weight: bold; }
-
+  font-weight: bold;
+}
 .btn-toxgreen {
-  color:#fff;
-  background-color:#6bc260;
-  border-color:#5abb4d; }
-
-.btn-toxgreen:hover,.btn-toxgreen:focus,.btn-toxgreen:active,.btn-toxgreen.active,.open>.dropdown-toggle.btn-toxgreen{
-  color:#fff;
-  background-color:#4eac42;
-  border-color:#429238; }
-
-.btn-toxgreen .badge{
-  color:#6bc260;
-  background-color:#fff; }
-
+  color: #fff;
+  background-color: #6bc260;
+  border-color: #5abb4d;
+}
+.btn-toxgreen:hover, .btn-toxgreen:focus, .btn-toxgreen:active, .btn-toxgreen.active, .open>.dropdown-toggle.btn-toxgreen {
+  color: #fff;
+  background-color: #4eac42;
+  border-color: #429238;
+}
+.btn-toxgreen .badge {
+  color: #6bc260;
+  background-color: #fff;
+}
 .btn-toxred {
-  color:#fff;
-  background-color:#c84e4e;
-  border-color:#bf3d3d; }
-
-.btn-toxred:hover,.btn-toxred:focus,.btn-toxred:active,.btn-toxred.active,.open>.dropdown-toggle.btn-toxred{
-  color:#fff;
-  background-color:#ab3737;
-  border-color:#902e2e; }
-
-.btn-toxred .badge{
-  color:#6bc260;
-  background-color:#fff; }
-
+  color: #fff;
+  background-color: #c84e4e;
+  border-color: #bf3d3d;
+}
+.btn-toxred:hover, .btn-toxred:focus, .btn-toxred:active, .btn-toxred.active, .open>.dropdown-toggle.btn-toxred {
+  color: #fff;
+  background-color: #ab3737;
+  border-color: #902e2e;
+}
+.btn-toxred .badge {
+  color: #6bc260;
+  background-color: #fff;
+}
 .modal-content, .modal-header {
-  border-radius: 0; }
-
+  border-radius: 0;
+}
 .modal.info .modal-header {
   background: #2088C8;
   border-color: #2088C8;
-  color: #fff; }
-
+  color: #fff;
+}
 .modal.error .modal-header {
   background: #c84e4e;
   border-color: #c84e4e;
-  color: #fff; }
-
+  color: #fff;
+}
 .modal.warning .modal-header {
   background: #cebf44;
   border-color: #cebf44;
-  color: #fff; }
-
+  color: #fff;
+}
 .dropdown-menu {
   background: #1c1c1c;
-  box-shadow: 0 0 10px 3px black; }
-
+  box-shadow: 0 0 10px 3px black;
+}
 .dropdown-menu li img {
   width: 20px;
-  height:20px; }
-
+  height: 20px;
+}
 .dropdown-menu span {
-  color: white; }
-
+  color: white;
+}
 .dropdown-menu li a:hover, .dropdown-menu li a:active {
-  background: #515151; }
-
+  background: #515151;
+}
 
 /*** PROFILE ***/
+
 #profile-card {
   position: relative;
-  top: 0; left:0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 60px;
   background: #1c1c1c;
-  margin: 0; padding: 10px;
-  color: white; }
-
+  margin: 0;
+  padding: 10px;
+  color: white;
+}
 #profile-card-back-button {
   display: none;
   float: left;
-  width: 40px; height: 40px;
-  margin: 15px 10px; }
-
+  width: 40px;
+  height: 40px;
+  margin: 15px 10px;
+}
 #profile-card-picture {
   float: left;
-  margin-right: 10px; }
-
+  margin-right: 10px;
+}
 #profile-card-status-dropdown {
-  float: right; }
-
+  float: right;
+}
 #profile-card-status-button {
   padding: 9px 10px;
   line-height: 20px;
   background: #414141;
-  border: none; }
-
+  border: none;
+}
 #profile-card-username {
-  font-weight: bold; }
-
+  font-weight: bold;
+}
 #profile-card-status-msg {
-  color: #d1d1d1; }
-
+  color: #d1d1d1;
+}
 #profile-card-username, #profile-card-status-msg {
   display: block;
   width: auto;
   border: none;
-  background: transparent; }
-
+  background: transparent;
+}
 #profile-card-username:focus, #profile-card-status-msg:focus {
   border: 1px solid #d1d1d1;
   background: #414141;
-  color: #ffffff; }
-
+  color: #ffffff;
+}
 
 /*** CONTACT LIST ***/
+
 #contact-list-wrapper {
   position: absolute;
-  top: 60px; bottom: 50px;
+  top: 60px;
+  bottom: 50px;
   width: 100%;
-  overflow:auto;
+  overflow: auto;
   direction: rtl;
-  background: #414141; }
-
+  background: #414141;
+}
 #contact-list {
   direction: ltr;
-  color: white; }
-
+  color: white;
+}
 #contact-list-status-select {
-  margin:10px 5px 10px 10px; padding: 5px 10px;
+  margin: 10px 5px 10px 10px;
+  padding: 5px 10px;
   background: #1c1c1c;
   border: 1px solid #000;
   border-radius: 5px;
   color: white;
   line-height: 10px;
-  font-weight: bold; }
-
+  font-weight: bold;
+}
 #contact-list .contact {
   display: block;
   width: 100%;
-  vertical-align:top;
   padding: 10px;
   border: none;
   background: #414141;
   text-align: left;
   text-decoration: none;
-  color: white; }
-
+  color: white;
+}
 #contact-list .contact:hover, #contact-list .contact:active {
-  background: #515151; }
-
+  background: #515151;
+}
 #contact-list .contact-status-icon {
   float: right;
-  padding: 10px; }
-
+  padding: 10px;
+}
 #contact-list .contact-avatar {
   float: left;
-  margin-right: 10px; }
-
+  margin-right: 10px;
+}
 #contact-list .contact-name {
-  min-height: 20px; }
-
+  min-height: 20px;
+}
 #contact-list .contact-status-msg {
   min-height: 20px;
-  color: #d1d1d1; }
-
+  color: #d1d1d1;
+}
 #contact-list .active.contact {
   background: white;
   position: relative;
-  z-index: 1; }
-
+  z-index: 1;
+}
 #contact-list .active.contact .contact-name {
-  color: #1c1c1c; }
-
+  color: #1c1c1c;
+}
 #contact-list .active.contact .contact-status-msg {
-  color: #414141; }
-
+  color: #414141;
+}
 
 /*** button-panel ***/
+
 #button-panel {
   position: absolute;
   bottom: 0;
   height: 50px;
-  margin: 0; padding: 0;
-  background: #1c1c1c; }
-
+  margin: 0;
+  padding: 0;
+  background: #1c1c1c;
+}
 #button-panel button {
   display: block;
   float: left;
-  width: 25%; height: 50px;
-  margin: 0; padding: 0;
+  width: 25%;
+  height: 50px;
+  margin: 0;
+  padding: 0;
   border: none;
   border-radius: 0;
   background: #1c1c1c;
-  color: white; }
-
+  color: white;
+}
 #button-panel button:hover, #button-panel button:active {
-  background: #515151; }
-
+  background: #515151;
+}
 
 /*** chatview ***/
+
 #mainview {
   position: absolute;
-  top: 0; right: 0; bottom: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   background: #fff;
-  box-shadow: 0 0 10px #000; }
-
+  box-shadow: 0 0 10px #000;
+}
 #mainview-welcome {
   height: 100%;
   overflow: auto;
   padding: 10% 20%;
-  text-align: center; }
-
+  text-align: center;
+}
 #mainview-welcome h1 {
-  border-bottom: 1px solid #d1d1d1; }
-
+  border-bottom: 1px solid #d1d1d1;
+}
 #mainview-welcome p {
   font-size: 1.2em;
-  font-weight: lighter; }
-
+  font-weight: lighter;
+}
 #mainview-chat-header {
   position: absolute;
-  top: 0; right: 0; left: 0;
+  top: 0;
+  right: 0;
+  left: 0;
   z-index: 1;
   padding: 10px 8px 9px 10px;
   background-color: white;
-  box-shadow: 0 0 5px #414141; }
-
+  box-shadow: 0 0 5px #414141;
+}
 #mainview-chat-header .avatar {
   float: left;
-  margin-right: 10px; }
-
+  margin-right: 10px;
+}
 #mainview-chat-header .btn-toxgreen, #mainview-chat-header .btn-toxred {
-  width: 50px; height: 40px;
-  margin: 0 2px; padding: 7px 0 11px 0; }
-
+  width: 50px;
+  height: 40px;
+  margin: 0 2px;
+  padding: 7px 0 11px 0;
+}
 #mainview-chat-header-username {
   font-weight: bold;
-  color: #1c1c1c; }
-
+  color: #1c1c1c;
+}
 #mainview-chat-header-status-msg {
-  color: #414141; }
-
+  color: #414141;
+}
 #mainview-chat-body {
   position: absolute;
   overflow: auto;
-  top: 70px; right:0; bottom: 80px; left: 0;
-  padding: 10px; }
-
+  top: 70px;
+  right: 0;
+  bottom: 80px;
+  left: 0;
+  padding: 10px;
+}
 #mainview-chat-body div .chatname {
   display: inline-block;
   min-width: 7em;
   margin-right: .5em;
   color: #1c1c1c;
   font-weight: bold;
-  text-align: right; }
-
+  text-align: right;
+}
 #mainview-chat-body .messageself, #mainview-chat-body .messageself .chatname {
-  color: #414141; }
-
+  color: #414141;
+}
 #mainview-chat-body .timestamp {
   text-align: right;
   float: right;
-  color: #414141; }
-
+  color: #414141;
+}
 #mainview-chat-footer {
   position: absolute;
-  right: 0; bottom: 0; left: 0;
-  height: 80px; }
-
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 80px;
+}
 #mainview-chat-footer-textarea-wrapper {
   position: absolute;
-  right: 110px; bottom: 0; left: 0;
+  right: 110px;
+  bottom: 0;
+  left: 0;
   height: 60px;
-  margin: 10px 0 10px 10px; }
-
+  margin: 10px 0 10px 10px;
+}
 #mainview-chat-footer textarea {
-  width: 100%; height: 60px;
+  width: 100%;
+  height: 60px;
   padding: 5px;
   border: 1px solid #d1d1d1;
   border-right: none;
-  resize: none; }
-
+  resize: none;
+}
 #mainview-chat-footer-buttons-wrapper {
   position: absolute;
-  right: 0; bottom: 0;
-  width: 100px; height: 60px;
-  margin: 10px 10px 10px 0; }
-
+  right: 0;
+  bottom: 0;
+  width: 100px;
+  height: 60px;
+  margin: 10px 10px 10px 0;
+}
 #mainview-chat-footer-buttons-wrapper button {
   border: none;
-  padding: 0; }
-
+  padding: 0;
+}
 #mainview-chat-footer-button-emoticon {
   border-radius: 0 5px 0 0;
-  width: 29px; height: 29px;
-  display:block; }
-
+  width: 29px;
+  height: 29px;
+  display: block;
+}
 #mainview-chat-footer-button-attach {
   border-radius: 0 0 5px 0;
   margin-top: 2px;
-  width: 29px; height: 29px;
-  display:block; }
-
+  width: 29px;
+  height: 29px;
+  display: block;
+}
 #mainview-chat-footer-button-send {
-  width: 60px; height: 60px;
-  float: right; }
-
+  width: 60px;
+  height: 60px;
+  float: right;
+}
 #mainview-settings {
   height: 100%;
   overflow: auto;
-  padding: 10px; }
-
+  padding: 10px;
+}
 #mainview-settings h1 {
   margin: 15px 0 -6px 0;
-  font-size: 2em; }
-
+  font-size: 2em;
+}
 
 /*** MEDIA QUERYS ***/
-@media (max-width: 767px ) {
+
+@media (max-width: 767px) {
   #profile-card, #contact-list-wrapper, #button-panel {
     width: 100%;
-    transition: transform 250ms; }
-
+    transition: transform 250ms;
+  }
   #mainview {
     right: -100%;
     width: 100%;
-    transition: transform 250ms; }
-
+    transition: transform 250ms;
+  }
   .translate100left {
-    transform: translateX(-100%); }
-
+    transform: translateX(-100%);
+  }
   .translate75left {
-    transform: translateX(-75%); }
+    transform: translateX(-75%);
+  }
 }
-
-@media (min-width: 768px ) {
+@media (min-width: 768px) {
   #profile-card, #contact-list-wrapper, #button-panel {
-    width: 40%; }
-
+    width: 40%;
+  }
   #mainview {
     width: 60%;
   }
 }
-
-@media (min-width: 992px ) {
+@media (min-width: 992px) {
   #profile-card, #contact-list-wrapper, #button-panel {
-    width: 30%; }
-
+    width: 30%;
+  }
   #mainview {
     width: 70%;
   }
 }
-
-@media (min-width: 1200px ) {
+@media (min-width: 1200px) {
   #profile-card, #contact-list-wrapper, #button-panel {
-    width: 25%; }
-
+    width: 25%;
+  }
   #mainview {
     width: 75%;
   }

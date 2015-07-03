@@ -19,6 +19,7 @@
   along with WebTox.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <html lang="en" ng-app="webtox" ng-controller="webtoxCtrl" class="ng-cloak">
+
 <head>
   <title>WebTox</title>
   <meta charset="utf-8">
@@ -29,6 +30,7 @@
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="app.css">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -42,15 +44,50 @@
       </button>
 
       <ul class="dropdown-menu dropdown-menu-right">
-        <li><a href="#" ng-click="setUserStatus('NONE')"><img src="img/toxui/dot_online.png">&emsp;<span translate>Online</span></a></li>
-        <li><a href="#" ng-click="setUserStatus('AWAY')"><img src="img/toxui/dot_away.png">&emsp;<span translate>Away</span></a></li>
-        <li><a href="#" ng-click="setUserStatus('BUSY')"><img src="img/toxui/dot_busy.png">&emsp;<span translate>Busy</span></a></li>
+        <li>
+          <a href="#" ng-click="setUserStatus('NONE')">
+            <img src="img/toxui/dot_online.png">&emsp;
+            <span translate>Online</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" ng-click="setUserStatus('AWAY')">
+            <img src="img/toxui/dot_away.png">&emsp;
+            <span translate>Away</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" ng-click="setUserStatus('BUSY')">
+            <img src="img/toxui/dot_busy.png">&emsp;
+            <span translate>Busy</span>
+          </a>
+        </li>
         <!--<li><a href="#" ng-click=""><img src="img/toxui/dot_invisible.png">&emsp;<span translate>Invisible</span></a></li>-->
         <li class="divider"></li>
-        <li><a data-toggle="modal" href="#modal-toxid"><span class="glyphicon glyphicon-user"></span>&emsp;<span translate>Show ID</span></a></li>
-        <li><a ng-click="goFullscreen()" href="#"><span class="glyphicon glyphicon-fullscreen"></span>&emsp;<span translate>Fullscreen</span></a></li>
-        <li><a ng-click="showSettings()" href="#" ><span class="glyphicon glyphicon-cog"></span>&emsp;<span translate>Settings</span></a></li>
-        <li><a data-toggle="modal" href="#modal-about"><span class="glyphicon glyphicon-leaf"></span>&emsp;<span translate>About</span></a></li>
+        <li>
+          <a data-toggle="modal" href="#modal-toxid">
+            <span class="glyphicon glyphicon-user"></span>&emsp;
+            <span translate>Show ID</span>
+          </a>
+        </li>
+        <li>
+          <a ng-click="goFullscreen()" href="#">
+            <span class="glyphicon glyphicon-fullscreen"></span>&emsp;
+            <span translate>Fullscreen</span>
+          </a>
+        </li>
+        <li>
+          <a ng-click="showSettings()" href="#">
+            <span class="glyphicon glyphicon-cog"></span>&emsp;
+            <span translate>Settings</span>
+          </a>
+        </li>
+        <li>
+          <a data-toggle="modal" href="#modal-about">
+            <span class="glyphicon glyphicon-leaf"></span>&emsp;
+            <span translate>About</span>
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -85,26 +122,37 @@
   </div>
 
   <div id="button-panel">
-    <button data-toggle="modal" href="#modal-friend-requests" title="Add contact"><img src="img/toxui/add.png" alt="Add contact"></button>
-    <button ng-click="notImplemented()" title="New group chat"><img src="img/toxui/group.png" alt="New group chat"></button>
-    <button ng-click="notImplemented()" title="File transfer"><img src="img/toxui/transfer.png" alt="File transfer"></button>
-    <button ng-click="showSettings()" title="Settings"><img src="img/toxui/settings.png" alt="Settings"></button>
+    <button data-toggle="modal" href="#modal-friend-requests" title="Add contact">
+      <img src="img/toxui/add.png" alt="Add contact">
+    </button>
+    <button ng-click="notImplemented()" title="New group chat">
+      <img src="img/toxui/group.png" alt="New group chat">
+    </button>
+    <button ng-click="notImplemented()" title="File transfer">
+      <img src="img/toxui/transfer.png" alt="File transfer">
+    </button>
+    <button ng-click="showSettings()" title="Settings">
+      <img src="img/toxui/settings.png" alt="Settings">
+    </button>
   </div>
   <!-- END OF Sidebar -->
 
   <!-- Main View -->
   <div id="mainview">
     <!-- Welcome -->
-    <div id="mainview-welcome" ng-show="active_mainview === mainview.WELCOME">
+    <div id="mainview-welcome" ng-show="active_mainview === 'welcome'">
       <h1>WebTox</h1>
-      <p><strong style="color: #c84e4e;">WebTox is not ready yet. Do not use it unless you know what you do.</strong></p>
-      <p>With the rise of government monitoring programs, Tox provides an easy to use application that allows you to connect with friends and family without anyone else listening in. While other big-name services require you to pay for features, Tox is totally free, and comes without advertising.</p>
+      <p>
+        <strong style="color: #c84e4e;">WebTox is not ready yet. Do not use it unless you know what you do.</strong>
+      </p>
+      <p>With the rise of government monitoring programs, Tox provides an easy to use application that allows you to connect with friends and family without anyone else listening in. While other big-name services require you to pay for features, Tox is totally
+        free, and comes without advertising.</p>
       <p>Nowadays, every government seems to be interested in what we're saying online. Tox is built on a "privacy goes first" agenda, and we make no compromises. Your safety is our top priority, and there isn't anything in the world that will change that.</p>
       <p>Proof: 1 + 2 = {{ 1 + 2 }}</p>
     </div>
 
     <!-- Chat -->
-    <div id="mainview-chat" ng-show="active_mainview === mainview.CHAT">
+    <div id="mainview-chat" ng-show="active_mainview === 'chat'">
       <div id="mainview-chat-header">
         <button class="chat-header-button btn btn-toxred pull-right" data-toggle="modal" href="#modal-friend-del">
           <img src="img/toxui/no.png" alt="Unfriend">
@@ -133,15 +181,21 @@
           <textarea ng-model="messagetosend"></textarea>
         </div>
         <div id="mainview-chat-footer-buttons-wrapper">
-          <button id="mainview-chat-footer-button-send" class="btn btn-toxgreen" ng-click="sendMessage()"><img src="img/toxui/sendmessage.png" alt="Send"></button>
-          <button id="mainview-chat-footer-button-emoticon" class="btn btn-toxgreen" ng-click="notImplemented()"><img src="img/toxui/emoticon.png" alt=":-)"></button>
-          <button id="mainview-chat-footer-button-attach" class="btn btn-toxgreen" ng-click="notImplemented()"><img src="img/toxui/attach.png" alt="#"></button>
+          <button id="mainview-chat-footer-button-send" class="btn btn-toxgreen" ng-click="sendMessage()">
+            <img src="img/toxui/sendmessage.png" alt="Send">
+          </button>
+          <button id="mainview-chat-footer-button-emoticon" class="btn btn-toxgreen" ng-click="notImplemented()">
+            <img src="img/toxui/emoticon.png" alt=":-)">
+          </button>
+          <button id="mainview-chat-footer-button-attach" class="btn btn-toxgreen" ng-click="notImplemented()">
+            <img src="img/toxui/attach.png" alt="#">
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Settings -->
-    <div id="mainview-settings" ng-show="active_mainview === mainview.SETTINGS">
+    <div id="mainview-settings" ng-show="active_mainview === 'settings'">
       <h1>Settings</h1>
       <hr>
       <h4>Your Tox ID</h4>
@@ -152,13 +206,21 @@
       <div class="form-horizontal">
         <div class="form-group">
           <label for="inputAuthUser" class="col-sm-3 control-label">GUI Authentication User</label>
-          <div class="col-sm-3"><input type="text" id="inputAuthUser" class="form-control input-sm" ng-model="settings.auth_user" value="" placeholder="User"></div>
-          <div class="col-sm-1"><button class="btn btn-sm btn-default initiallyhidden">Save</button></div>
+          <div class="col-sm-3">
+            <input type="text" id="inputAuthUser" class="form-control input-sm" ng-model="settings.auth_user" value="" placeholder="User">
+          </div>
+          <div class="col-sm-1">
+            <button class="btn btn-sm btn-default initiallyhidden">Save</button>
+          </div>
         </div>
         <div class="form-group">
           <label for="inputAuthPass" class="col-sm-3 control-label">GUI Authentication Password</label>
-          <div class="col-sm-3"><input type="password" id="inputAuthPass" class="form-control input-sm" ng-model="settings.auth_password" value="" placeholder="Password"></div>
-          <div class="col-sm-1"><button class="btn btn-sm btn-default initiallyhidden">Save</button></div>
+          <div class="col-sm-3">
+            <input type="password" id="inputAuthPass" class="form-control input-sm" ng-model="settings.auth_password" value="" placeholder="Password">
+          </div>
+          <div class="col-sm-1">
+            <button class="btn btn-sm btn-default initiallyhidden">Save</button>
+          </div>
         </div>
       </div>
       <hr>
@@ -167,12 +229,18 @@
       <div class="form-horizontal">
         <div class="form-group">
           <div class="col-sm-offset-3 col-sm-3">
-            <div class="checkbox"><label><input type="checkbox" id="checkbox-notifications" ng-model="settings.notifications_enabled"> Show notifications</label></div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="checkbox-notifications" ng-model="settings.notifications_enabled"> Show notifications</label>
+            </div>
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-offset-3 col-sm-3">
-            <div class="checkbox"><label><input type="checkbox" id="checkbox-away-on-disconnect" ng-model="settings.away_on_disconnect"> Change status to <i>away</i> when the last webclient disconnects</label></div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="checkbox-away-on-disconnect" ng-model="settings.away_on_disconnect"> Change status to <i>away</i> when the last webclient disconnects</label>
+            </div>
           </div>
         </div>
       </div>
@@ -184,7 +252,7 @@
           <label for="inputAuthUser" class="col-sm-3 control-label">GUI Listen Address</label>
           <div class="col-sm-3">
             <input type="text" class="form-control input-sm" placeholder="127.0.0.1:8080">
-          <p class="help-block">Use 0.0.0.0 for external access</p>
+            <p class="help-block">Use 0.0.0.0 for external access</p>
           </div>
         </div>
       </div>
@@ -204,7 +272,10 @@
           <p>This is your Tox ID that you can give out to your friends.</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> <span>Close</span></button>
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove"></span>
+            <span>Close</span>
+          </button>
         </div>
       </div>
     </div>
@@ -237,7 +308,10 @@
           <p>// TODO </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> <span>Close</span></button>
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove"></span>
+            <span>Close</span>
+          </button>
         </div>
       </div>
     </div>
@@ -254,8 +328,14 @@
           <p>Do you really want to delete this contact?</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default btn-sm" ng-click="deleteFriend(contacts[activecontactindex].number)"><span class="glyphicon glyphicon-ok"></span> <span>Yes</span></button>
-          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> <span>No</span></button>
+          <button type="button" class="btn btn-default btn-sm" ng-click="deleteFriend(contacts[activecontactindex].number)">
+            <span class="glyphicon glyphicon-ok"></span>
+            <span>Yes</span>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove"></span>
+            <span>No</span>
+          </button>
         </div>
       </div>
     </div>
@@ -269,8 +349,12 @@
           <h4 class="modal-title" id="modal-about-title">About</h4>
         </div>
         <div class="modal-body">
-          <h1 class="text-center"><img alt="WebTox" title="WebTox" src="img/logo-with-text-512.png" style="max-width: 100%;"></h1>
-          <h1 class="text-center"><small>0.0.1</small></h1>
+          <h1 class="text-center">
+            <img alt="WebTox" title="WebTox" src="img/logo-with-text-512.png" style="max-width: 100%;">
+          </h1>
+          <h1 class="text-center">
+            <small>0.0.1</small>
+          </h1>
           <hr/>
           <p translate>Copyright &copy; 2014 WebTox authors and contributors</p>
           <p translate>WebTox includes the following software or portions thereof:</p>
@@ -287,7 +371,10 @@
           </ul>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> <span>Close</span></button>
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove"></span>
+            <span>Close</span>
+          </button>
         </div>
       </div>
     </div>
@@ -310,6 +397,11 @@
   <script src="angular/angular.min.js"></script>
   <script src="jquery/jquery-1.11.1.min.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/fullscreen.js"></script>
+  <script src="js/webapp.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/ws.js"></script>
 </body>
+
 </html>
