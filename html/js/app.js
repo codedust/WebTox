@@ -96,6 +96,14 @@
       }
     };
 
+    $scope.scrollLeft = function() {
+      if ($(window).width() < 768) {
+        $('#profile-card, #contact-list-wrapper, #button-panel').addClass('translate75left');
+        $('#mainview').addClass('translate100left');
+        $('#profile-card-back-button').show();
+      }
+    };
+
     // == Settings ==
     $scope.showSettings = function() {
       $scope.active_mainview = 'settings';
@@ -179,14 +187,6 @@
       $('#profile-card-back-button').hide();
     });
 
-    $('#contact-list-wrapper').click(function() {
-      if ($(window).width() < 768) {
-        $('#profile-card, #contact-list-wrapper, #button-panel').addClass('translate75left');
-        $('#mainview').addClass('translate100left');
-        $('#profile-card-back-button').show();
-      }
-    });
-
     $("#mainview-chat-footer-textarea-wrapper textarea").keyup(function(event) {
       if (event.which == 13 && event.shiftKey !== true) {
         $scope.sendMessage();
@@ -245,7 +245,7 @@
 
     $scope.installWebApp = function() {
       WebApp.install(function() {
-        $scope.appInstallationStatus = 'installed';
+        $scope.appInstallationStatus = 'success';
       });
     };
 

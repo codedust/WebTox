@@ -2,7 +2,7 @@ TODO
 ----
 
 - CSRF prevention
-- option to only allow request from localhost
+- option to only allow requests from localhost
 - option to change the HTTP port
 - typing notifications (mit padding-bottom)
 - fake offline messages
@@ -21,9 +21,9 @@ TODO
 - emoticons
 - A/V
 - auto-updates / update-notification
-- Mobile UI
 - power consumption on mobile devices
 - context menu (right click to contacts to remove etc)
 - Etherpad-like persistent notes
 - add missing back buttons (settings, welcome) + dont swipe to much (click on friendlist)
 - display date in addition to time for chat messages
+- Logout

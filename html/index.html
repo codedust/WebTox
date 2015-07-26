@@ -104,8 +104,8 @@
       </select>
       <button class="btn btn-toxgreen inline-button" data-toggle="modal" href="#modal-friend-requests">1 Friend Request</button>
       <button class="btn btn-toxgreen inline-button" href="#" ng-show="appInstallationStatus == 'notinstalled'" ng-click="installWebApp()">install</button>
-      <button class="btn btn-toxgreen inline-button disabled" href="#" ng-show="appInstallationStatus == 'installed'" ng-click="installWebApp()">installed</button>
-      <a href="#" class="contact" ng-class="{active: contacts[activecontactindex] == contact}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number)" ng-show="!onlyShowOnlineContacts || contact.online">
+      <button class="btn btn-toxgreen inline-button disabled" href="#" ng-show="appInstallationStatus == 'success'" ng-click="installWebApp()">installed</button>
+      <a href="#" class="contact" ng-class="{active: contacts[activecontactindex] == contact}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number); scrollLeft();" ng-show="!onlyShowOnlineContacts || contact.online">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Online"  src="img/toxui/dot_online.png">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'NONE' && contact.last_msg_read < contact.chat[0].time"                                alt="Online"  src="img/toxui/dot_online_notification.png">
         <img class="contact-status-icon" ng-show="contact.online && contact.status == 'AWAY' && (contact.chat.length == 0 || contact.last_msg_read >= contact.chat[0].time)" alt="Away"    src="img/toxui/dot_away.png">
