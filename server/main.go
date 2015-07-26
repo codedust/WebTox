@@ -152,7 +152,7 @@ func main() {
 	for {
 		select {
 		case <-c:
-			fmt.Println("Saving...")
+			fmt.Printf("\nSaving...\n")
 			if err := saveData(tox, toxSaveFilepath); err != nil {
 				fmt.Println(err)
 			}

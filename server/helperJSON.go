@@ -58,9 +58,6 @@ func rejectWithFriendErrorJSON(w http.ResponseWriter, err error) {
 	case gotox.ErrFriendAddAlreadySent:
 		rejectWithErrorJSON(w, "already_send", "A friend request to this person has already send.")
 		return
-	case gotox.ErrFriendAddUnkown:
-		fallthrough
-	case gotox.ErrFriendAddNoMem:
 	default:
 		rejectWithDefaultErrorJSON(w)
 		return

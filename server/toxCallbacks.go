@@ -120,7 +120,7 @@ func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind gotox
 		// Append f to the map[uint8]*os.File
 		transfers[filenumber] = f
 		transfersFilesizes[filenumber] = filesize
-		t.FileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
+		t.FileControl(friendnumber, filenumber, gotox.TOX_FILE_CONTROL_RESUME)
 
 	} else if kind == gotox.TOX_FILE_KIND_DATA {
 		// Init *File handle
@@ -131,7 +131,7 @@ func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind gotox
 		transfersFilesizes[filenumber] = filesize
 
 		// TODO do not accept any file send request without asking the user
-		t.FileControl(friendnumber, true, filenumber, gotox.TOX_FILE_CONTROL_RESUME, nil)
+		t.FileControl(friendnumber, filenumber, gotox.TOX_FILE_CONTROL_RESUME)
 
 	} else {
 		log.Print("onFileRecv: unknown TOX_FILE_KIND: ", kind)
