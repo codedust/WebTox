@@ -69,16 +69,28 @@ func main() {
 	savedata, err := loadData(toxSaveFilepath)
 	if err == nil {
 		options = &gotox.Options{
-			true, true,
-			gotox.TOX_PROXY_TYPE_NONE, "127.0.0.1", 5555, 0, 0,
-			3389,
-			gotox.TOX_SAVEDATA_TYPE_TOX_SAVE, savedata}
+			IPv6Enabled:  true,
+			UDPEnabled:   true,
+			ProxyType:    gotox.TOX_PROXY_TYPE_NONE,
+			ProxyHost:    "127.0.0.1",
+			ProxyPort:    5555,
+			StartPort:    0,
+			EndPort:      0,
+			TcpPort:      CFG_TCP_PROXY_PORT,
+			SaveDataType: gotox.TOX_SAVEDATA_TYPE_TOX_SAVE,
+			SaveData:     savedata}
 	} else {
 		options = &gotox.Options{
-			true, true,
-			gotox.TOX_PROXY_TYPE_NONE, "127.0.0.1", 5555, 0, 0,
-			3389,
-			gotox.TOX_SAVEDATA_TYPE_NONE, nil}
+			IPv6Enabled:  true,
+			UDPEnabled:   true,
+			ProxyType:    gotox.TOX_PROXY_TYPE_NONE,
+			ProxyHost:    "127.0.0.1",
+			ProxyPort:    5555,
+			StartPort:    0,
+			EndPort:      0,
+			TcpPort:      CFG_TCP_PROXY_PORT,
+			SaveDataType: gotox.TOX_SAVEDATA_TYPE_NONE,
+			SaveData:     nil}
 		newToxInstance = true
 	}
 
