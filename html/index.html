@@ -102,7 +102,8 @@
         <option value="">All</option>
         <option value="1">Online</option>
       </select>
-      <button class="btn btn-toxgreen inline-button" data-toggle="modal" href="#modal-friend-requests">1 Friend Request</button>
+      <button class="btn btn-toxgreen inline-button" ng-show="friendRequests.length == 1" data-toggle="modal" href="#modal-friend-requests">1 Friend Request</button>
+      <button class="btn btn-toxgreen inline-button" ng-show="friendRequests.length >= 2" data-toggle="modal" href="#modal-friend-requests">{{ friendRequests.length }} Friend Requests</button>
       <button class="btn btn-toxgreen inline-button" href="#" ng-show="appInstallationStatus == 'notinstalled'" ng-click="installWebApp()">install</button>
       <button class="btn btn-toxgreen inline-button disabled" href="#" ng-show="appInstallationStatus == 'success'" ng-click="installWebApp()">installed</button>
       <a href="#" class="contact" ng-class="{active: contacts[activecontactindex] == contact}" ng-repeat="contact in contacts | orderBy:'online':true" ng-click="showChat(contact.number); scrollLeft();" ng-show="!onlyShowOnlineContacts || contact.online">
@@ -289,7 +290,7 @@
           <h4 class="modal-title" id="modal-friend-requests-title">Friend requests</h4>
         </div>
         <div class="modal-body">
-          <h3>Send friend request</h3>
+          <h3>Send a friend request</h3>
           <form role="form" action="#" ng-submit="sendFriendRequest(new_friend_request.friend_id, new_friend_request.message)">
             <div class="form-group input-group">
               <span class="input-group-addon">Tox ID</span>
@@ -304,8 +305,17 @@
           </form>
           <hr>
           <h3>Incoming friend requests</h3>
-          <p>No outstanding friend requests.</p>
-          <p>// TODO </p>
+          <div class="panel panel-default friend-request" ng-repeat="friendRequest in friendRequests">
+            <div class="panel-heading" ng-click="toggleFriendRequestBody()">{{friendRequest.publicKey|uppercase}}</div>
+            <div class="panel-body" ng-show="!friendRequest.is_ignored">
+              <div style="white-space: pre;">{{friendRequest.message}}</div>
+              <div class="text-right">
+                <button class="btn btn-sm" ng-click="ignoreFriendRequest()">Ignore</button>
+                <button class="btn btn-sm btn-toxgreen" ng-click="acceptFriendRequest()">Accept</button>
+              </div>
+            </div>
+          </div>
+          <p ng-show="friendRequests.length == 0">No outstanding friend requests.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">

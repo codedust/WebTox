@@ -389,6 +389,9 @@ body {
   height: 60px;
   float: right;
 }
+
+/*** settings view ***/
+
 #mainview-settings {
   height: 100%;
   overflow: auto;
@@ -397,6 +400,12 @@ body {
 #mainview-settings h1 {
   margin: 15px 0 -6px 0;
   font-size: 2em;
+}
+
+/*** friend request modal ***/
+
+.friend-request .panel-heading {
+  cursor: pointer;
 }
 
 /*** MEDIA QUERYS ***/

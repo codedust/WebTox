@@ -42,6 +42,28 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Fprintf(w, friendlist)
 
+		case "/get/friend_requests":
+			type friendRequest struct {
+				PublicKey string `json:"publicKey"`
+				Message   string `json:"message"`
+				IsIgnored bool   `json:"is_ignored"`
+			}
+
+			dbFriendRequests := storage.GetFriendRequests(-1)
+
+			var friendRequests []friendRequest
+
+			for _, dbFriendRequest := range dbFriendRequests {
+				friendRequests = append(friendRequests, friendRequest{PublicKey: dbFriendRequest.PublicKey, Message: dbFriendRequest.Message, IsIgnored: dbFriendRequest.IsIgnored})
+			}
+
+			if friendRequests == nil {
+				friendRequests = []friendRequest{}
+			}
+
+			jsonFriendRequests, _ := json.Marshal(friendRequests)
+			fmt.Fprintf(w, string(jsonFriendRequests))
+
 		case "/get/profile":
 			type profile struct {
 				Username      string `json:"username"`
@@ -227,6 +249,50 @@ var handleAPI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			fmt.Fprintf(w, string(friendID))
+
+		case "/post/friend_request_is_ignored":
+			type friendRequest struct {
+				PublicKey string `json:"publicKey"`
+				IsIgnored bool   `json:"is_ignored"`
+			}
+
+			var incomingData friendRequest
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			storage.StoreFriendRequestIgnoreStatus(incomingData.PublicKey, incomingData.IsIgnored)
+
+		case "/post/friend_request_accept":
+			type friendRequest struct {
+				PublicKey string `json:"publicKey"`
+			}
+
+			var incomingData friendRequest
+			err = json.Unmarshal(data, &incomingData)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			publicKeyBytes, err := hex.DecodeString(incomingData.PublicKey)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			_, err = tox.FriendAddNorequest(publicKeyBytes)
+			if err != nil {
+				rejectWithDefaultErrorJSON(w)
+				return
+			}
+
+			storage.DeleteFriendRequest(incomingData.PublicKey)
+
+			// broadcast status to all connected clients
+			broadcastToClients(createSimpleJSONEvent("friendlist_update"))
 
 		case "/post/delete_friend":
 			type friend struct {

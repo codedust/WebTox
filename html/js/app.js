@@ -40,6 +40,7 @@
     $scope.contacts = [];
     $scope.activecontactindex = -1;
     $scope.messagetosend = '';
+    $scope.friendRequests = [];
     $scope.new_friend_request = {
       friend_id: '',
       message: '',
@@ -166,6 +167,37 @@
       });
     };
 
+    $scope.toggleFriendRequestBody = function(){
+      $(this)[0].friendRequest.is_ignored = !$(this)[0].friendRequest.is_ignored;
+    };
+
+    $scope.ignoreFriendRequest = function() {
+      var friendRequest = $(this)[0].friendRequest;
+
+      $http.post('api/post/friend_request_is_ignored', {
+        publicKey: friendRequest.publicKey,
+        is_ignored: true
+      }).success(function() {
+        friendRequest.is_ignored = true;
+      }).error(function(err) {
+        // TODO
+        alert(err.message);
+      });
+    };
+
+    $scope.acceptFriendRequest = function() {
+      var friendRequest = $(this)[0].friendRequest;
+
+      $http.post('api/post/friend_request_accept', {
+        publicKey: friendRequest.publicKey
+      }).success(function() {
+        fetchFriendRequests();
+      }).error(function(err) {
+        // TODO
+        alert(err.message);
+      });
+    };
+
     $scope.deleteFriend = function(friend) {
       $http.post('api/post/delete_friend', {
         friend: friend
@@ -179,6 +211,7 @@
         alert(err.message);
       });
     };
+
 
     // == Event handlers ==
     $('#profile-card-back-button').click(function() {
@@ -268,6 +301,12 @@
       });
     };
 
+    var fetchFriendRequests = function() {
+      $http.get('api/get/friend_requests').success(function(data) {
+        $scope.friendRequests = data;
+      });
+    };
+
     // == WebSocket connection ==
     WS.registerHandler('friend_message', function(data) {
       var i = getContactIndexByNum(data.friend);
@@ -318,6 +357,7 @@
 
     WS.registerHandler('profile_update', fetchProfile);
     WS.registerHandler('friendlist_update', fetchContactlist);
+    WS.registerHandler('friend_requests_update', fetchFriendRequests);
 
     WS.registerHandler('avatar_update', function() {
       $scope.curDate = Date.now(); // reload avatar images
@@ -328,6 +368,7 @@
       $('#modal-connection-error').modal('hide');
       fetchProfile();
       fetchContactlist();
+      fetchFriendRequests();
       fetchSettings();
       $scope.$apply();
     };

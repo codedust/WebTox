@@ -12,16 +12,9 @@ import (
 
 func onFriendRequest(t *gotox.Tox, publicKey []byte, message string) {
 	fmt.Printf("New friend request from %s\n", hex.EncodeToString(publicKey))
-	fmt.Printf("Invitation message: %v\n", message)
 
-	// TODO Auto-accept friend request
-	a, err := t.FriendAddNorequest(publicKey)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf(string(a))
-
-	broadcastToClients(createSimpleJSONEvent("friendlist_update"))
+	storage.StoreFriendRequest(hex.EncodeToString(publicKey), message)
+	broadcastToClients(createSimpleJSONEvent("friend_requests_update"))
 }
 
 func onFriendMessage(t *gotox.Tox, friendnumber uint32, messagetype gotox.ToxMessageType, message string) {

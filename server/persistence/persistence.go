@@ -25,6 +25,12 @@ type Message struct {
 	Time       int64
 }
 
+type FriendRequest struct {
+	PublicKey string
+	Message   string
+	IsIgnored bool
+}
+
 // Open creates a connection to the database
 // always close the connection with `defer storageConn.Close()`
 func Open(filename string) (*StorageConn, error) {
@@ -36,26 +42,32 @@ func Open(filename string) (*StorageConn, error) {
 
 	// create database tables
 	sqlStmt := `
-  CREATE TABLE IF NOT EXISTS messages (
-    id INTEGER PRIMARY KEY,
-    friend INTEGER,
-    isIncoming INTEGER,
-    isAction INTEGER,
-    time INTEGER,
-    message TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS friends (
-    id INTEGER PRIMARY KEY,
-    publicKey TEXT
-  );
-  CREATE TABLE IF NOT EXISTS friendLastMessageRead (
-    friend INTEGER PRIMARY KEY,
-    time INTEGER
-  );
-  CREATE TABLE IF NOT EXISTS keyValueStorage (
-    key TEXT PRIMARY KEY,
-    value TEXT
-  );`
+	CREATE TABLE IF NOT EXISTS messages (
+		id INTEGER PRIMARY KEY,
+		friend INTEGER,
+		isIncoming INTEGER,
+		isAction INTEGER,
+		time INTEGER,
+		message TEXT NOT NULL
+	);
+	CREATE TABLE IF NOT EXISTS friends (
+		id INTEGER PRIMARY KEY,
+		publicKey TEXT
+	);
+	CREATE TABLE IF NOT EXISTS friend_requests (
+		publicKey TEXT NOT NULL,
+		message TEXT NOT NULL,
+		isIgnored INTEGER,
+		PRIMARY KEY(publicKey)
+	);
+	CREATE TABLE IF NOT EXISTS friendLastMessageRead (
+		friend INTEGER PRIMARY KEY,
+		time INTEGER
+	);
+	CREATE TABLE IF NOT EXISTS keyValueStorage (
+		key TEXT PRIMARY KEY,
+		value TEXT
+	);`
 
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
@@ -73,8 +85,8 @@ func (s *StorageConn) Close() {
 }
 
 // StoreKeyValue stores a key-value pair of strings
-// key		the key (case sensitive)
-// value	the value
+// key    the key (case sensitive)
+// value  the value
 func (s *StorageConn) StoreKeyValue(key string, value string) error {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
@@ -90,7 +102,7 @@ func (s *StorageConn) StoreKeyValue(key string, value string) error {
 
 // GetKeyValue returns the value corresponding to the given key or an empty
 // string if the value could not be determined
-// key		the key (case sensitive)
+// key  the key (case sensitive)
 func (s *StorageConn) GetKeyValue(key string) (string, error) {
 	rows, err := s.db.Query("SELECT value FROM keyValueStorage WHERE key = ?", key)
 	if err != nil {
@@ -110,9 +122,9 @@ func (s *StorageConn) GetKeyValue(key string) (string, error) {
 
 // StoreMessage stores a message
 // friendPublicKey  the publicKey of the friend
-// isIncoming				specifies if the message is received (true) or sent (false)
-// isAction					specifies if the message is an action or not
-// message					the message
+// isIncoming       specifies if the message is received (true) or sent (false)
+// isAction         specifies if the message is an action or not
+// message          the message
 func (s *StorageConn) StoreMessage(friendPublicKey string, isIncoming bool, isAction bool, message string) error {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
@@ -132,8 +144,8 @@ func (s *StorageConn) StoreMessage(friendPublicKey string, isIncoming bool, isAc
 
 // GetMessages returns previously stored messages of a friend.
 // friendPublicKey  the publicKey of the friend
-// limit  					the number of messages that should be returned. Set limit
-// 									to -1 to get all messages
+// limit            the number of messages that should be returned. Set limit
+//                  to -1 to get all messages
 func (s *StorageConn) GetMessages(friendPublicKey string, limit int) []Message {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
@@ -169,6 +181,83 @@ func (s *StorageConn) GetMessages(friendPublicKey string, limit int) []Message {
 	return messages
 }
 
+// StoreFriendRequest stores a friend request
+// friendPublicKey  the publicKey of the friend request
+// message          the message send with the friend request
+func (s *StorageConn) StoreFriendRequest(friendPublicKey string, message string) error {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	_, err := s.db.Exec(`INSERT OR REPLACE INTO friend_requests(publicKey, message, isIgnored) VALUES(?, ?, ?)`, friendPublicKey, message, 0)
+	if err != nil {
+		log.Print("[persistence StoreMessage] INSERT statement failed")
+		return err
+	}
+	return nil
+}
+
+// GetFriendRequests returns previously stored friend requests.
+// limit  the number of friend requests that should be returned. Set limit to
+//        -1 to get all messages
+func (s *StorageConn) GetFriendRequests(limit int) []FriendRequest {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	rows, err := s.db.Query("SELECT publicKey, message, isIgnored FROM friend_requests ORDER BY isIgnored DESC LIMIT ?", limit)
+	if err != nil {
+		log.Print("[persistence GetMessages] SELECT statement failed")
+		return nil
+	}
+	defer rows.Close()
+
+	var friendRequests []FriendRequest
+
+	for rows.Next() {
+		var publicKey string
+		var message string
+		var isIgnored bool
+		rows.Scan(&publicKey, &message, &isIgnored)
+		friendRequests = append(friendRequests, FriendRequest{PublicKey: publicKey, Message: message, IsIgnored: isIgnored})
+	}
+
+	if friendRequests == nil {
+		return nil
+	}
+
+	return friendRequests
+}
+
+// StoreFriendRequestIgnoreStatus updates the isIgnored attribute of a friend request
+// friendPublicKey  the publicKey of the friend request
+// isIgnored        the new value for the isIgnored attribute
+func (s *StorageConn) StoreFriendRequestIgnoreStatus(friendPublicKey string, isIgnored bool) error {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	_, err := s.db.Exec(`UPDATE friend_requests SET isIgnored = ? WHERE publicKey = ?`, isIgnored, friendPublicKey)
+	if err != nil {
+		log.Print("[persistence StoreMessage] UPDATE statement failed")
+		return err
+	}
+	return nil
+}
+
+// DeleteFriendRequest deletes a stored friend request
+// friendPublicKey  the publicKey of the friend request
+func (s *StorageConn) DeleteFriendRequest(friendPublicKey string) error {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	_, err := s.db.Exec(`DELETE FROM friend_requests WHERE publicKey = ?`, friendPublicKey)
+	if err != nil {
+		log.Print("[persistence StoreMessage] DELETE statement failed")
+		return err
+	}
+	return nil
+}
+
+// SetLastMessageRead sets the message read status for a given friend
+// friendPublicKey  the publicKey of the friend
 func (s *StorageConn) SetLastMessageRead(friendPublicKey string) error {
 	friendId, err := s.getFriendDbId(friendPublicKey)
 	if err != nil {
@@ -185,6 +274,8 @@ func (s *StorageConn) SetLastMessageRead(friendPublicKey string) error {
 	return nil
 }
 
+// GetLastMessageRead returns the last message read time for a given friend
+// friendPublicKey  the publicKey of the friend
 func (s *StorageConn) GetLastMessageRead(friendPublicKey string) (int64, error) {
 	friendId, err := s.getFriendDbId(friendPublicKey)
 	if err != nil {
