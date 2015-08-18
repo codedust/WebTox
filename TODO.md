@@ -8,22 +8,20 @@ TODO
 - fake offline messages
 - fake online status
 - enter new name for contacts
-- receive friend requests UI
 - links in chat messages
 - file transfer
-- settings: notifications
 - encrypt tox_save with password
 - dont show notifications when browser is focused
 - add sounds
 - group chats (waiting for toxcore/gotox update)
-- add support for toxme.se
+- add support for toxme.io
 - localization (www.transifex.com?)
 - emoticons
-- A/V
+- A/V?
 - auto-updates / update-notification
 - power consumption on mobile devices
 - context menu (right click to contacts to remove etc)
 - Etherpad-like persistent notes
-- add missing back buttons (settings, welcome) + dont swipe to much (click on friendlist)
+- add missing back buttons (settings, welcome) on small screens
 - display date in addition to time for chat messages
 - Logout

@@ -45,9 +45,14 @@ var storage *persistence.StorageConn
 // the global options for HTTP authentication
 var authOptions *httpserve.AuthOptions
 
+type FileTransfer struct {
+	fileHandle *os.File
+	fileSize   uint64
+	fileKind   gotox.ToxFileKind
+}
+
 // Map of active file transfers
-var transfers = make(map[uint32]*os.File)
-var transfersFilesizes = make(map[uint32]uint64)
+var transfers = make(map[uint32]FileTransfer)
 
 func main() {
 	var newToxInstance bool = false

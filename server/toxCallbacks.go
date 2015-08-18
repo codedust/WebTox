@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"github.com/codedust/go-tox"
 	"log"
 	"os"
@@ -11,7 +10,7 @@ import (
 )
 
 func onFriendRequest(t *gotox.Tox, publicKey []byte, message string) {
-	fmt.Printf("New friend request from %s\n", hex.EncodeToString(publicKey))
+	log.Printf("New friend request from %s\n", hex.EncodeToString(publicKey))
 
 	storage.StoreFriendRequest(hex.EncodeToString(publicKey), message)
 	broadcastToClients(createSimpleJSONEvent("friend_requests_update"))
@@ -106,22 +105,30 @@ func onFriendStatusChanges(t *gotox.Tox, friendnumber uint32, userstatus gotox.T
 
 func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind gotox.ToxFileKind, filesize uint64, filename string) {
 	if kind == gotox.TOX_FILE_KIND_AVATAR {
-		// Init *File handle
 		publicKey, _ := tox.FriendGetPublickey(friendnumber)
-		f, _ := os.Create("../html/avatars/" + hex.EncodeToString(publicKey) + ".png")
+		file, err := os.Create("../html/avatars/" + hex.EncodeToString(publicKey) + ".png")
+		if err != nil {
+			log.Println("[ERROR] Error creating file", "../html/avatars/"+hex.EncodeToString(publicKey)+".png")
+		}
 
-		// Append f to the map[uint8]*os.File
-		transfers[filenumber] = f
-		transfersFilesizes[filenumber] = filesize
-		t.FileControl(friendnumber, filenumber, gotox.TOX_FILE_CONTROL_RESUME)
+		// only accept avatars with a file size <= CFG_MAX_AVATAR_SIZE
+		if filesize <= CFG_MAX_AVATAR_SIZE {
+			// append the file to the map of active file transfers
+			transfers[filenumber] = FileTransfer{fileHandle: file, fileSize: filesize, fileKind: kind}
+
+			t.FileControl(friendnumber, filenumber, gotox.TOX_FILE_CONTROL_RESUME)
+		} else {
+			t.FileControl(friendnumber, filenumber, gotox.TOX_FILE_CONTROL_CANCEL)
+		}
 
 	} else if kind == gotox.TOX_FILE_KIND_DATA {
-		// Init *File handle
-		f, _ := os.Create("../html/download/" + filename)
+		file, err := os.Create("../html/download/" + filename)
+		if err != nil {
+			log.Println("[ERROR] Error creating file", "../html/download/"+filename)
+		}
 
-		// Append f to the map[uint8]*os.File
-		transfers[filenumber] = f
-		transfersFilesizes[filenumber] = filesize
+		// append the file to the map of active file transfers
+		transfers[filenumber] = FileTransfer{fileHandle: file, fileSize: filesize, fileKind: kind}
 
 		// TODO do not accept any file send request without asking the user
 		t.FileControl(friendnumber, filenumber, gotox.TOX_FILE_CONTROL_RESUME)
@@ -132,24 +139,54 @@ func onFileRecv(t *gotox.Tox, friendnumber uint32, filenumber uint32, kind gotox
 }
 
 func onFileRecvControl(t *gotox.Tox, friendnumber uint32, filenumber uint32, fileControl gotox.ToxFileControl) {
-	// TODO: Do something useful
+	transfer, ok := transfers[filenumber]
+	if !ok {
+		log.Println("Error: File handle does not exist")
+		return
+	}
+
+	// TODO handle TOX_FILE_CONTROL_RESUME and TOX_FILE_CONTROL_PAUSE
+	if fileControl == gotox.TOX_FILE_CONTROL_CANCEL {
+		// delete file handle
+		transfer.fileHandle.Close()
+		delete(transfers, filenumber)
+	}
 }
 
 func onFileRecvChunk(t *gotox.Tox, friendnumber uint32, filenumber uint32, position uint64, data []byte) {
-	// Write data to the hopefully valid *File handle
-	if f, exists := transfers[filenumber]; exists {
-		f.WriteAt(data, (int64)(position))
+	transfer, ok := transfers[filenumber]
+	if !ok {
+		if len(data) == 0 {
+			// ignore the zero-length chunk that indicates that the transfer is
+			// complete (see below)
+			return
+		}
+
+		log.Println("Error: File handle does not exist")
+		return
 	}
 
-	// Finished receiving file
-	if position == transfersFilesizes[filenumber] {
-		f := transfers[filenumber]
-		f.Sync()
-		f.Close()
-		delete(transfers, filenumber)
-		log.Println("File written: ", filenumber)
+	// write data to the file handle
+	transfer.fileHandle.WriteAt(data, (int64)(position))
 
-		// update friendlist (avatar updates)
-		broadcastToClients(createSimpleJSONEvent("avatar_update"))
+	// file transfer completed
+	if position+uint64(len(data)) >= transfer.fileSize {
+		// Some clients will send us another zero-length chunk without data (only
+		// required for stream, not necessary for files with a known size) and some
+		// will not.
+		// We will delete the file handle now (we aleady reveived the whole file)
+		// and ignore the file handle error when the empty chunk arrives.
+
+		fileKind := transfer.fileKind
+
+		transfer.fileHandle.Sync()
+		transfer.fileHandle.Close()
+		delete(transfers, filenumber)
+		log.Println("File transfer completed (receiving)", filenumber)
+
+		if fileKind == gotox.TOX_FILE_KIND_AVATAR {
+			// update friendlist
+			broadcastToClients(createSimpleJSONEvent("avatar_update"))
+		}
 	}
 }
