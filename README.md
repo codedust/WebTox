@@ -18,7 +18,7 @@ You should **not** use WebTox if
  - you just want to use Tox as a normal desktop application and don't care about the technical details.
  - you have never heard of "Port Forwarding" and "DynDNS".
 
-If WebTox does not fit your requirements, try out one of the [recommended Tox clients for your plattform](https://tox.im/downloads).
+If WebTox does not fit your requirements, try out one of the [recommended Tox clients for your plattform](https://wiki.tox.chat/Binaries).
 
 
 How to run
